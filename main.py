@@ -18,13 +18,14 @@ def main():
 
     # Initialize game
     game = Game()
-    clock = pygame.time.Clock()
 
+    # Main game loop
     while running:
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        game.update()
         game.draw(screen)
     
     pygame.quit()

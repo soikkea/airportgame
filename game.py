@@ -14,10 +14,19 @@ class Game(object):
         '''
         # Set up the font used by the game
         self.font = pygame.font.SysFont("Consolas", 25)
+        self.clock = pygame.time.Clock()
+    
+    def update(self):
+        '''
+        Update game logic.
+        '''
+        # How much time has passed since the last call
+        self.clock.tick()
     
     def draw(self, screen):
         screen.fill(GREEN)
         self.display_text("AirPortGame", screen)
+        self.show_fps(screen)
         pygame.display.flip()
     
     def create_text(self, string, color=BLACK):
@@ -32,3 +41,11 @@ class Game(object):
         Displays the text in 'text' on the screen.
         '''
         screen.blit(self.create_text(text, color), [x, y])
+    
+    def show_fps(self, screen):
+        '''
+        Displays the current FPS on screen
+        '''
+        fps = self.clock.get_fps()
+        self.display_text("FPS: {0:.2f}".format(fps), screen, 600, 10)
+        pass
