@@ -15,6 +15,7 @@ class Game(object):
         # Set up the font used by the game
         self.font = pygame.font.SysFont("Consolas", 25)
         self.clock = pygame.time.Clock()
+        self.player = None
     
     def update(self):
         '''
@@ -22,10 +23,16 @@ class Game(object):
         '''
         # How much time has passed since the last call
         self.clock.tick()
+
+        # A new player must be created:
+        if self.player is None:
+            pass
     
     def draw(self, screen):
         screen.fill(GREEN)
         self.display_text("AirPortGame", screen)
+        if self.player is None:
+            self.display_text("Please enter your name: ", screen, 100, 100, RED)
         self.show_fps(screen)
         pygame.display.flip()
     
