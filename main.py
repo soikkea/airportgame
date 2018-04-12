@@ -22,9 +22,14 @@ def main():
     # Main game loop
     while running:
         # Event handling
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 running = False
+        # Update text input
+        if game.textinput.is_active:
+            game.textinput.update(events)
+
         game.update()
         game.draw(screen)
     

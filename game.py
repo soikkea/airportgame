@@ -2,6 +2,7 @@
 
 import pygame
 from colors import *
+from textinput import TextInput
 
 class Game(object):
     '''
@@ -16,23 +17,29 @@ class Game(object):
         self.font = pygame.font.SysFont("Consolas", 25)
         self.clock = pygame.time.Clock()
         self.player = None
+        self.textinput = TextInput()
     
     def update(self):
         '''
         Update game logic.
-        '''
+        '''        
         # How much time has passed since the last call
         self.clock.tick()
 
         # A new player must be created:
         if self.player is None:
+            if not self.textinput.is_active():
+                self.textinput.activate()
+                self.textinput.set_pos(100, 150)
             pass
+        return True
     
     def draw(self, screen):
         screen.fill(GREEN)
         self.display_text("AirPortGame", screen)
         if self.player is None:
             self.display_text("Please enter your name: ", screen, 100, 100, RED)
+            self.textinput.draw(screen)
         self.show_fps(screen)
         pygame.display.flip()
     
