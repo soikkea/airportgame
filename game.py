@@ -18,15 +18,38 @@ class Game(object):
         self.pgtext = PgText("Consolas", 25)
         self.clock = pygame.time.Clock()
         self.player = None
-        self.textinput = TextInput(self.pgtext)
+        self.textinput = TextInput(self.pgtext, color=RED)
+
+        # Screen surface that has the size of 800 x 600
+        self.screen = pygame.display.set_mode((800, 600))
+        self.game_loop()
+    
+    def game_loop(self):
+        """
+        Main game loop
+        """
+        running = True
+        while running:
+            # How much time has passed since the last call
+            self.clock.tick()
+
+            # Event handling
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    running = False
+            # Update text input
+            if self.textinput.is_active:
+                self.textinput.update(events)
+
+            self.update()
+            self.draw(self.screen)
+        return
     
     def update(self):
         '''
         Update game logic.
-        '''        
-        # How much time has passed since the last call
-        self.clock.tick()
-
+        '''
         # A new player must be created:
         if self.player is None:
             if not self.textinput.is_active():
