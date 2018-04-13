@@ -4,12 +4,13 @@ class TextInput(object):
     """
     Class for interpreting text input from keyboard.
     """
-    def __init__(self):
+    def __init__(self, pgtext):
         self.active = False
         self.return_pressed = False
         self.value = ""
         self.x = 0
         self.y = 0
+        self.pgtext = pgtext
         pass
     
     def update(self, events):

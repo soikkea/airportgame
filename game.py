@@ -3,6 +3,7 @@
 import pygame
 from colors import *
 from textinput import TextInput
+from pgtext import PgText
 
 class Game(object):
     '''
@@ -14,10 +15,10 @@ class Game(object):
         Constructor
         '''
         # Set up the font used by the game
-        self.font = pygame.font.SysFont("Consolas", 25)
+        self.pgtext = PgText("Consolas", 25)
         self.clock = pygame.time.Clock()
         self.player = None
-        self.textinput = TextInput()
+        self.textinput = TextInput(self.pgtext)
     
     def update(self):
         '''
@@ -36,30 +37,19 @@ class Game(object):
     
     def draw(self, screen):
         screen.fill(GREEN)
-        self.display_text("AirPortGame", screen)
+        self.pgtext.display_text("AirPortGame", screen)
         if self.player is None:
-            self.display_text("Please enter your name: ", screen, 100, 100, RED)
+            self.pgtext.display_text("Please enter your name: ", screen, 100, 100, RED)
             self.textinput.draw(screen)
         self.show_fps(screen)
         pygame.display.flip()
     
-    def create_text(self, string, color=BLACK):
-        '''
-        Returns a new Surface with string written on it using self.font and
-        antialiasing. Default color is BLACK.
-        '''
-        return self.font.render(string, True, color)
     
-    def display_text(self, text, screen, x=10, y=10, color=BLACK):
-        '''
-        Displays the text in 'text' on the screen.
-        '''
-        screen.blit(self.create_text(text, color), [x, y])
     
     def show_fps(self, screen):
         '''
         Displays the current FPS on screen
         '''
         fps = self.clock.get_fps()
-        self.display_text("FPS: {0:.2f}".format(fps), screen, 600, 10)
+        self.pgtext.display_text("FPS: {0:.2f}".format(fps), screen, 600, 10)
         pass
