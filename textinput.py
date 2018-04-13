@@ -18,15 +18,17 @@ class TextInput(object):
         self.show_cursor = True
         self.color = color
     
-    def update(self, events):
-        pass
+    def update(self, elapsed_time, events):
+        self.cursor_tick += elapsed_time
+        if self.cursor_tick > 500:
+            self.show_cursor = not self.show_cursor
+            self.cursor_tick = 0
     
     def draw(self, screen):
         if not self.active:
             return
-        self.cursor_tick = (self.cursor_tick + 1) % 60
         text = self.value
-        if self.cursor_tick < 30:
+        if self.show_cursor:
             text += "_"
         self.pgtext.display_text(text, screen, self.x, self.y, self.color)
     

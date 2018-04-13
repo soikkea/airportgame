@@ -20,6 +20,8 @@ class Game(object):
         self.player = None
         self.textinput = TextInput(self.pgtext, color=RED)
 
+        self.max_fps = 60
+
         # Screen surface that has the size of 800 x 600
         self.screen = pygame.display.set_mode((800, 600))
         self.game_loop()
@@ -30,8 +32,9 @@ class Game(object):
         """
         running = True
         while running:
-            # How much time has passed since the last call
-            self.clock.tick()
+            # How much time has passed since the last call (milliseconds)
+            # Limit FPS to max_fps
+            elapsed_time = self.clock.tick(self.max_fps)
 
             # Event handling
             events = pygame.event.get()
@@ -40,7 +43,7 @@ class Game(object):
                     running = False
             # Update text input
             if self.textinput.is_active:
-                self.textinput.update(events)
+                self.textinput.update(elapsed_time, events)
 
             self.update()
             self.draw(self.screen)
