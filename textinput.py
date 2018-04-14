@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from pygame.locals import *
+
 from colors import BLACK
 
 class TextInput(object):
@@ -23,6 +25,16 @@ class TextInput(object):
         if self.cursor_tick > 500:
             self.show_cursor = not self.show_cursor
             self.cursor_tick = 0
+        
+        # Process keyboard events:
+        for event in events:
+            if event.type == KEYDOWN and not self.return_pressed:
+                if event.key == K_BACKSPACE: self.value = self.value[:-1]
+                elif event.key == K_RETURN or event.key == K_KP_ENTER: self.return_pressed = True
+                elif event.key == K_a: self.value += "a"
+                elif event.key == K_b: self.value += "b"
+                elif event.key == K_c: self.value += "c"
+                # TODO: finish the rest of keyboard
     
     def draw(self, screen):
         if not self.active:
@@ -34,9 +46,11 @@ class TextInput(object):
     
     def activate(self):
         self.active = True
+        self.return_pressed = False
     
     def deactivate(self):
         self.active = False
+        self.return_pressed = False
     
     def is_active(self):
         return self.active
@@ -44,3 +58,9 @@ class TextInput(object):
     def set_pos(self, x, y):
         self.x = x
         self.y = y
+    
+    def was_return_pressed(self):
+        return self.return_pressed
+    
+    def get_value(self):
+        return self.value

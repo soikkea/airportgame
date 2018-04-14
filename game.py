@@ -4,6 +4,7 @@ import pygame
 from colors import *
 from textinput import TextInput
 from pgtext import PgText
+from player import Player
 
 class Game(object):
     '''
@@ -58,7 +59,12 @@ class Game(object):
             if not self.textinput.is_active():
                 self.textinput.activate()
                 self.textinput.set_pos(100, 150)
-            pass
+            if self.textinput.was_return_pressed():
+                if len(self.textinput.get_value()) > 0:
+                    self.player = Player(self.textinput.get_value())
+                    self.textinput.deactivate
+                else:
+                    self.textinput.activate()
         return True
     
     def draw(self, screen):
