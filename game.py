@@ -21,6 +21,8 @@ class Game(object):
         self.player = None
         self.textinput = TextInput(self.pgtext, color=RED)
 
+        self.airfield = None
+
         self.max_fps = 60
 
         # Screen surface that has the size of 800 x 600
@@ -65,6 +67,8 @@ class Game(object):
                     self.textinput.deactivate
                 else:
                     self.textinput.activate()
+            # TODO: Choose difficulty
+            # TODO: Initialize Airfield
         return True
     
     def draw(self, screen):
