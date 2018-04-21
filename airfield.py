@@ -2,6 +2,7 @@
 
 import random
 import math
+from runway import Runway
 
 class Airfield(object):
     """
@@ -100,9 +101,8 @@ class Airfield(object):
             
             self.runways[i] = (start, end)
 
-            # TODO: Add runway class
-            new_runway = (start, end, i+1, length)
-            # new_runway = Runway(start, end, i+1, length)
+            new_runway = Runway(start, end, i+1, length)
+            self.runway_list.append(new_runway)
 
         return
 
@@ -131,7 +131,10 @@ class Airfield(object):
         if index == 0:
             return True
         
-        for runway in range(index):
-            for r_point in range(2):
-                # TODO: Fix this using the runway class
-                return True
+        for runway_i in range(index):
+            runway = self.runway_list[runway_i]
+            start, end = runway.get_start_and_end_pos()
+            if (self.distance_between(point, start) < self.MINIMUM_DISTANCE or
+                self.distance_between(point, end) < self.MINIMUM_DISTANCE):
+                return False
+        return True
