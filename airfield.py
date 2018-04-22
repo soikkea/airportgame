@@ -3,6 +3,7 @@
 import random
 import math
 from runway import Runway
+import pygame
 
 class Airfield(object):
     """
@@ -14,14 +15,21 @@ class Airfield(object):
     RUNWAY_LENGTH_MED = 100
     RUNWAY_LENGTH_LONG = 150
     MINIMUM_DISTANCE = 30
+    TRANSPARENCY_COLORKEY = (1, 2, 3)
 
-    def __init__(self):
+    def __init__(self, offset=(0, 0)):
         self.runway_list = []
         # TODO: airfield size based on difficulty
         self.max_runways = 10
         self.min_runways = 3
 
         self.create_airfield()
+
+        self.airfield_map = pygame.Surface((self.FIELD_WIDTH, self.FIELD_HEIGHT))
+        self.airfield_map.fill(self.TRANSPARENCY_COLORKEY)
+        self.airfield_map.set_colorkey(self.TRANSPARENCY_COLORKEY)
+        self.update_map()
+        self.offset = offset
     
     def create_airfield(self):
         """
@@ -69,7 +77,7 @@ class Airfield(object):
 
                 temp += 1
 
-                angle = random.random() * math.pi * 2
+                angle = random.random() * math.pi * 2.0
                 e_x = math.cos(angle) * runway_length
                 e_y = math.sin(angle) * runway_length
 
@@ -97,7 +105,7 @@ class Airfield(object):
             if e_x < s_x:
                 temp = start
                 start = end
-                end = start
+                end = temp
             
             self.runways[i] = (start, end)
 
@@ -138,3 +146,16 @@ class Airfield(object):
                 self.distance_between(point, end) < self.MINIMUM_DISTANCE):
                 return False
         return True
+    
+
+    def update_map(self):
+        for runway in self.runway_list:
+            runway.draw(self.airfield_map)
+    
+
+    def get_airfield_map(self):
+        return self.airfield_map
+    
+
+    def draw(self, screen):
+        screen.blit(self.airfield_map, self.offset)

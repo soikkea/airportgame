@@ -5,11 +5,14 @@ from colors import *
 from textinput import TextInput
 from pgtext import PgText
 from player import Player
+from airfield import Airfield
 
 class Game(object):
     '''
     The core of the game.
     '''
+    WINDOW_WIDTH = 800
+    WINDOW_HEIGHT = 600
 
     def __init__(self):
         '''
@@ -26,7 +29,7 @@ class Game(object):
         self.max_fps = 60
 
         # Screen surface that has the size of 800 x 600
-        self.screen = pygame.display.set_mode((800, 600))
+        self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         self.game_loop()
     
     def game_loop(self):
@@ -65,10 +68,12 @@ class Game(object):
                 if len(self.textinput.get_value()) > 0:
                     self.player = Player(self.textinput.get_value())
                     self.textinput.deactivate
+                    # TODO: Choose difficulty
+                    # TODO: Initialize Airfield
+                    self.airfield = Airfield(offset=self.center_airfield())
                 else:
                     self.textinput.activate()
-            # TODO: Choose difficulty
-            # TODO: Initialize Airfield
+            
         return True
     
     def draw(self, screen):
@@ -77,6 +82,8 @@ class Game(object):
         if self.player is None:
             self.pgtext.display_text("Please enter your name: ", screen, 100, 100, RED)
             self.textinput.draw(screen)
+        else:
+            self.airfield.draw(screen)
         self.show_fps(screen)
         pygame.display.flip()
     
@@ -89,3 +96,9 @@ class Game(object):
         fps = self.clock.get_fps()
         self.pgtext.display_text("FPS: {0:.2f}".format(fps), screen, 600, 10)
         pass
+    
+
+    def center_airfield(self):
+        x = self.WINDOW_WIDTH / 2 - (Airfield.FIELD_WIDTH / 2)
+        y = self.WINDOW_HEIGHT / 2 - (Airfield.FIELD_HEIGHT / 2)
+        return (x, y)

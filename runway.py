@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+import pygame.draw
 # TODO:
 # from flight import Flight
 
@@ -9,6 +10,8 @@ class Runway(object):
     A part of an airfield
     """
     RUNWAY_WAIT_TIME = 45
+    RUNWAY_COLOR = (192, 192, 192)
+    RUNWAY_WIDTH = 15
 
     def __init__(self, start_pos, end_pos, number, length):
         """
@@ -35,3 +38,8 @@ class Runway(object):
 
     def get_start_and_end_pos(self):
         return (self.start_pos, self.end_pos)
+    
+
+    def draw(self, screen):
+        pygame.draw.line(screen, self.RUNWAY_COLOR, self.start_pos, self.end_pos, 
+        self.RUNWAY_WIDTH)
