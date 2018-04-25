@@ -11,9 +11,7 @@ class Airfield(object):
     """
     FIELD_HEIGHT = 200
     FIELD_WIDTH = 400
-    RUNWAY_LENGTH_SHORT = 70
-    RUNWAY_LENGTH_MED = 100
-    RUNWAY_LENGTH_LONG = 150
+
     MINIMUM_DISTANCE = 30
     TRANSPARENCY_COLORKEY = (1, 2, 3)
 
@@ -52,11 +50,11 @@ class Airfield(object):
                 length = random.randint(1,3)
             
             if length == 1:
-                runway_length = self.RUNWAY_LENGTH_SHORT
+                runway_length = Runway.RUNWAY_LENGTH_SHORT
             elif length == 2:
-                runway_length = self.RUNWAY_LENGTH_MED
+                runway_length = Runway.RUNWAY_LENGTH_MED
             elif length == 3:
-                runway_length = self.RUNWAY_LENGTH_LONG
+                runway_length = Runway.RUNWAY_LENGTH_LONG
             
             start_point_found = False
 
