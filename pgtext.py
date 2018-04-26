@@ -23,3 +23,8 @@ class PgText(object):
         Displays the text in 'text' on the screen.
         '''
         screen.blit(self.create_text(text, color), [x, y])
+
+
+def draw_text(font, size, text, screen, dest, color):
+    font = pygame.font.SysFont(font, size)
+    screen.blit(font.render(text, True, color), dest)

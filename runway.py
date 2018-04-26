@@ -4,6 +4,8 @@ import math
 import pygame
 # TODO:
 # from flight import Flight
+import colors
+from pgtext import draw_text
 
 class Runway(object):
     """
@@ -57,7 +59,38 @@ class Runway(object):
         # DEBUG:
         # pygame.draw.circle(screen, (255, 0, 0), self.start_pos, 5, 5)
         # pygame.draw.circle(screen, (255, 0, 0), self.end_pos, 5, 5)
+    
 
+    def paint(self, screen):
+        runway_background = pygame.Surface((self.RUNWAY_WIDTH, self.get_full_length()), pygame.SRCALPHA)
+
+        edge_offset = 5
+        line_length = 5
+        line_width = 2
+        number_size = 18
+
+        x = self.RUNWAY_WIDTH / 2
+        final_y = self.get_full_length() - edge_offset
+        start_y = edge_offset
+
+        painted = False
+        while not painted:
+            end_y = start_y + line_length
+            if end_y > final_y:
+                end_y = final_y
+                painted = True
+            pygame.draw.line(runway_background, colors.WHITE, (x, start_y), (x, end_y), 
+                line_width)
+            start_y = end_y + line_length
+
+        runway_background = pygame.transform.rotate(runway_background, self.get_angle())
+        w, h = runway_background.get_size()
+        mid_x = (self.start_pos[0] + self.end_pos[0]) / 2 
+        mid_y = (self.start_pos[1] + self.end_pos[1]) / 2
+        dest = (mid_x - w / 2, mid_y - h / 2) 
+        screen.blit(runway_background, dest)
+
+        draw_text("Consolas", number_size, str(self.number), screen, self.end_pos, colors.BLACK)
     
 
     def get_full_length(self):

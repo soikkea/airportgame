@@ -149,6 +149,9 @@ class Airfield(object):
     def update_map(self):
         for runway in self.runway_list:
             runway.draw(self.airfield_map)
+        
+        for runway in self.runway_list:
+            runway.paint(self.airfield_map)
     
 
     def get_airfield_map(self):
