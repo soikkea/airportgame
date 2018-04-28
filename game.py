@@ -47,6 +47,9 @@ class Game(object):
             for event in events:
                 if event.type == pygame.QUIT:
                     running = False
+                if (event.type == pygame.KEYDOWN and 
+                    event.key == pygame.K_ESCAPE):
+                    running = False
             # Update text input
             if self.textinput.is_active:
                 self.textinput.update(elapsed_time, events)
@@ -67,12 +70,12 @@ class Game(object):
             if self.textinput.was_return_pressed():
                 if len(self.textinput.get_value()) > 0:
                     self.player = Player(self.textinput.get_value())
-                    self.textinput.deactivate
-                    # TODO: Choose difficulty
-                    # TODO: Initialize Airfield
-                    self.airfield = Airfield(offset=self.center_airfield())
                 else:
-                    self.textinput.activate()
+                    self.player = Player("I am too important to input a name.")
+                self.textinput.deactivate
+                # TODO: Choose difficulty
+                # TODO: Initialize Airfield
+                self.airfield = Airfield(offset=self.center_airfield())
             
         return True
     
