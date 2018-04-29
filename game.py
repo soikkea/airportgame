@@ -6,6 +6,8 @@ from textinput import TextInput
 from pgtext import PgText
 from player import Player
 from airfield import Airfield
+from flight import Flight
+import random
 
 class Game(object):
     '''
@@ -28,9 +30,14 @@ class Game(object):
 
         self.max_fps = 60
 
+        self.time_since_last_flight_created = 0
+        self.incoming_flights = []
+
         # Screen surface that has the size of 800 x 600
         self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
+        # Start game loop
         self.game_loop()
+
     
     def game_loop(self):
         """
@@ -54,11 +61,11 @@ class Game(object):
             if self.textinput.is_active:
                 self.textinput.update(elapsed_time, events)
 
-            self.update()
+            self.update(elapsed_time)
             self.draw(self.screen)
         return
     
-    def update(self):
+    def update(self, elapsed_time):
         '''
         Update game logic.
         '''
@@ -76,7 +83,9 @@ class Game(object):
                 # TODO: Choose difficulty
                 # TODO: Initialize Airfield
                 self.airfield = Airfield(offset=self.center_airfield())
-            
+        else:
+            # Game is running normally
+            self.create_flight(elapsed_time)
         return True
     
     def draw(self, screen):
@@ -87,6 +96,8 @@ class Game(object):
             self.textinput.draw(screen)
         else:
             self.airfield.draw(screen)
+            for flight in self.incoming_flights:
+                flight.draw(screen)
         self.show_fps(screen)
         pygame.display.flip()
     
@@ -103,5 +114,30 @@ class Game(object):
 
     def center_airfield(self):
         x = self.WINDOW_WIDTH / 2 - (Airfield.FIELD_WIDTH / 2)
-        y = self.WINDOW_HEIGHT / 2 - (Airfield.FIELD_HEIGHT / 2)
+        y = self.WINDOW_HEIGHT / 2 - (Airfield.FIELD_HEIGHT
+            / 2)
         return (x, y)
+    
+
+    def create_flight(self, elapsed_time):
+        time_limit = 15
+
+        self.time_since_last_flight_created += elapsed_time
+        
+        # Make sure creation rate always above 0
+        creation_rate = (self.time_since_last_flight_created 
+            / time_limit) + 0.00005
+        
+        if len(self.incoming_flights) > 9:
+            creation_rate = 0.05
+        
+        chance = random.random()
+        if chance < creation_rate:
+            self.time_since_last_flight_created = 0
+            # TODO: Create name for flights
+            name = ""
+
+            x = random.randint(0, self.WINDOW_WIDTH - 1)
+            y = random.randint(0, self.WINDOW_HEIGHT - 1)
+            new_flight = Flight(name, None, x=x, y=y)
+            self.incoming_flights.append(new_flight)
