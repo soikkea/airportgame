@@ -33,6 +33,8 @@ class Game(object):
         self.time_since_last_flight_created = 0
         self.incoming_flights = []
 
+        self.selected_flight = None
+
         # Screen surface that has the size of 800 x 600
         self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         # Start game loop
@@ -57,6 +59,10 @@ class Game(object):
                 if (event.type == pygame.KEYDOWN and 
                     event.key == pygame.K_ESCAPE):
                     running = False
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    # Select flight
+                    # TODO:FINISH
+                    pass
             # Update text input
             if self.textinput.is_active:
                 self.textinput.update(elapsed_time, events)
@@ -120,16 +126,16 @@ class Game(object):
     
 
     def create_flight(self, elapsed_time):
-        time_limit = 15
+        time_limit = 180 * 1000
 
         self.time_since_last_flight_created += elapsed_time
         
-        # Make sure creation rate always above 0
         creation_rate = (self.time_since_last_flight_created 
-            / time_limit) + 0.00005
+            / time_limit) 
         
+        # Limit creation of new planes when there are too many
         if len(self.incoming_flights) > 9:
-            creation_rate = 0.05
+            creation_rate = 0.0005
         
         chance = random.random()
         if chance < creation_rate:
@@ -141,3 +147,11 @@ class Game(object):
             y = random.randint(0, self.WINDOW_HEIGHT - 1)
             new_flight = Flight(name, None, x=x, y=y)
             self.incoming_flights.append(new_flight)
+    
+
+    def find_closest_flight_in_range(self, x, y, max_range):
+        """
+        Return the flight closest to (x, y) within max_range
+        """
+        # TODO: FINISH THIS
+        pass
