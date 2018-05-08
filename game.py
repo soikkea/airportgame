@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import random
+# import sys
+
 import pygame
+
 from colors import *
 from textinput import TextInput
 from pgtext import PgText
 from player import Player
 from airfield import Airfield
 from flight import Flight
-import random
+
 
 class Game(object):
     '''
@@ -40,7 +44,6 @@ class Game(object):
         # Start game loop
         self.game_loop()
 
-    
     def game_loop(self):
         """
         Main game loop
@@ -62,7 +65,8 @@ class Game(object):
                 elif event.type == pygame.MOUSEBUTTONUP:
                     # Select flight
                     # TODO:FINISH
-                    pass
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    self.selected_flight = self.find_closest_flight_in_range(mouse_x, mouse_y)
             # Update text input
             if self.textinput.is_active:
                 self.textinput.update(elapsed_time, events)
@@ -104,6 +108,8 @@ class Game(object):
             self.airfield.draw(screen)
             for flight in self.incoming_flights:
                 flight.draw(screen)
+            if self.selected_flight is not None:
+                self.selected_flight.draw_selection_box(screen)
         self.show_fps(screen)
         pygame.display.flip()
     
@@ -149,9 +155,16 @@ class Game(object):
             self.incoming_flights.append(new_flight)
     
 
-    def find_closest_flight_in_range(self, x, y, max_range):
+    def find_closest_flight_in_range(self, x, y, max_range=10):
         """
-        Return the flight closest to (x, y) within max_range
+        Return the flight closest to (x, y) within max_range.
         """
-        # TODO: FINISH THIS
-        pass
+        closest_flight = None
+        closest_distance = max_range
+        point = pygame.math.Vector2(x, y)
+        for flight in self.incoming_flights:
+            distance = point.distance_to(flight.get_pos())
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_flight = flight
+        return closest_flight
