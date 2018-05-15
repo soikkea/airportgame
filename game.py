@@ -2,6 +2,7 @@
 
 import random
 # import sys
+import logging
 
 import pygame
 
@@ -38,6 +39,9 @@ class Game(object):
         self.incoming_flights = []
 
         self.selected_flight = None
+        self.selected_runway = None
+
+        self.logger = logging.getLogger(__name__)
 
         # Screen surface that has the size of 800 x 600
         self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
@@ -62,11 +66,24 @@ class Game(object):
                 if (event.type == pygame.KEYDOWN and 
                     event.key == pygame.K_ESCAPE):
                     running = False
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    # Select flight
-                    # TODO:FINISH
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
-                    self.selected_flight = self.find_closest_flight_in_range(mouse_x, mouse_y)
+                if self.player is not None:
+                    # Only do this if game is properly initialized
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        # Select flight
+                        # TODO:FINISH
+                        mouse_x, mouse_y = pygame.mouse.get_pos()
+                        flight_under_mouse = self.find_closest_flight_in_range(mouse_x, mouse_y)
+                        runway_under_mouse = self.find_closest_runway_in_range(mouse_x, mouse_y)
+                        if self.selected_flight is None:
+                            self.selected_flight = flight_under_mouse
+                        else:
+                            if runway_under_mouse is not None:
+                                self.selected_runway = runway_under_mouse
+                                self.logger.debug("Runway %d selected" % self.selected_runway.number)
+                            else:
+                                self.selected_runway = None
+                                self.selected_flight = flight_under_mouse
+                                self.logger.debug("Runway deselected")
             # Update text input
             if self.textinput.is_active:
                 self.textinput.update(elapsed_time, events)
@@ -113,8 +130,6 @@ class Game(object):
         self.show_fps(screen)
         pygame.display.flip()
     
-    
-    
     def show_fps(self, screen):
         '''
         Displays the current FPS on screen
@@ -123,14 +138,12 @@ class Game(object):
         self.pgtext.display_text("FPS: {0:.2f}".format(fps), screen, 600, 10)
         pass
     
-
     def center_airfield(self):
         x = self.WINDOW_WIDTH / 2 - (Airfield.FIELD_WIDTH / 2)
         y = self.WINDOW_HEIGHT / 2 - (Airfield.FIELD_HEIGHT
             / 2)
         return (x, y)
     
-
     def create_flight(self, elapsed_time):
         time_limit = 180 * 1000
 
@@ -154,7 +167,6 @@ class Game(object):
             new_flight = Flight(name, None, x=x, y=y)
             self.incoming_flights.append(new_flight)
     
-
     def find_closest_flight_in_range(self, x, y, max_range=10):
         """
         Return the flight closest to (x, y) within max_range.
@@ -168,3 +180,20 @@ class Game(object):
                 closest_distance = distance
                 closest_flight = flight
         return closest_flight
+    
+    def find_closest_runway_in_range(self, x, y, max_range=Airfield.MINIMUM_DISTANCE):
+        """
+        Returns the closest runway within max_range.
+        """
+        closest_runway = None
+        closest_distance = max_range
+        point = pygame.math.Vector2(x, y)
+        for runway in self.airfield.get_runways():
+            distance = point.distance_to(runway.get_start_pos() + self.airfield.get_offset())
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_runway = runway
+        # DEBUG
+        if closest_runway is not None:
+            self.logger.debug("Clicked at: %s, runway at: %s" % (point, (closest_runway.get_start_pos() + self.airfield.get_offset())))
+        return closest_runway

@@ -20,7 +20,9 @@ class Runway(object):
 
     def __init__(self, start_pos, end_pos, number, length):
         """
-        length: 1...3
+        start_pos (tuple)
+        end_pos (tuple)
+        length (int): 1...3
         """
         self.number = number
         self.start_pos = start_pos
@@ -108,3 +110,7 @@ class Runway(object):
         unrotated = pygame.math.Vector2(0, self.get_full_length())
         rotated = pygame.math.Vector2(self.end_pos[0] - self.start_pos[0], self.end_pos[1] - self.start_pos[1])
         return rotated.angle_to(unrotated)
+    
+
+    def get_start_pos(self):
+        return pygame.math.Vector2(self.start_pos)
