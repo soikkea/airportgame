@@ -92,9 +92,9 @@ class Runway(object):
         dest = (mid_x - w / 2, mid_y - h / 2) 
         screen.blit(runway_background, dest)
 
-        draw_text("Consolas", number_size, str(self.number), screen, self.end_pos, colors.BLACK)
+        # Draw the runway number
+        draw_text("Consolas", number_size, str(self.number), screen, self.start_pos, colors.BLACK)
     
-
     def get_full_length(self):
         if self.length == 1:
             return Runway.RUNWAY_LENGTH_SHORT
@@ -114,3 +114,8 @@ class Runway(object):
 
     def get_start_pos(self):
         return pygame.math.Vector2(self.start_pos)
+    
+    def draw_selection_circle(self, screen, offset):
+        pos = self.get_start_pos() + offset
+        pos = (int(pos.x), int(pos.y))
+        pygame.draw.circle(screen, colors.YELLOW, pos, 20, 3)

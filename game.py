@@ -127,6 +127,8 @@ class Game(object):
                 flight.draw(screen)
             if self.selected_flight is not None:
                 self.selected_flight.draw_selection_box(screen)
+            if self.selected_runway is not None:
+                self.selected_runway.draw_selection_circle(screen, self.airfield.get_offset())
         self.show_fps(screen)
         pygame.display.flip()
     
