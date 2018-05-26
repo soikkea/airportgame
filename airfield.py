@@ -2,8 +2,10 @@
 
 import random
 import math
-from runway import Runway
+
 import pygame
+
+from runway import Runway
 
 class Airfield(object):
     """
@@ -152,11 +154,12 @@ class Airfield(object):
         
         for runway in self.runway_list:
             runway.paint(self.airfield_map)
-    
 
     def get_airfield_map(self):
         return self.airfield_map
     
-
     def draw(self, screen):
         screen.blit(self.airfield_map, self.offset)
+    
+    def get_offset(self):
+        return pygame.math.Vector2(self.offset)
