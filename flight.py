@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import random
+import math
 
 import pygame.draw as pgdraw
 import pygame.math as pgmath
@@ -24,10 +25,17 @@ class Flight(object):
         self.plane = plane
         self.x = x
         self.y = y
+        #self.direction = random.random() * 2.0 * math.pi
+        self.direction = random.random() * 360
     
 
     def draw(self, screen):
         pgdraw.circle(screen, (0, 0, 0), (self.x, self.y), self.ICON_SIZE, 0)
+        dir_vect = pgmath.Vector2(0, 1).rotate(-self.direction) * Flight.ICON_SIZE * 2
+        vect_point = dir_vect + self.get_pos()
+        new_x = int(vect_point[0])
+        new_y = int(vect_point[1])
+        pgdraw.line(screen, (0, 0, 0,), (self.x, self.y), (new_x, new_y))
     
 
     def draw_selection_box(self, screen):
