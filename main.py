@@ -12,7 +12,7 @@ def main():
     logger = logging.getLogger(__name__)
 
     # Initialize pygame
-    logger.debug("Initializing game")
+    logger.debug("Initializing pygame")
     pygame.init()
     pygame.display.set_caption("AirController - Remastered")
 

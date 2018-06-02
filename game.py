@@ -12,6 +12,7 @@ from pgtext import PgText
 from player import Player
 from airfield import Airfield
 from flight import Flight
+from path import PointsPath
 
 
 class Game(object):
@@ -37,6 +38,19 @@ class Game(object):
 
         self.time_since_last_flight_created = 0
         self.incoming_flights = []
+        self.paths = []
+
+        # TODO: DEBUGGING
+        self.paths.append(
+            PointsPath(
+                [
+                    pygame.math.Vector2(0, 0),
+                    pygame.math.Vector2(self.WINDOW_WIDTH, self.WINDOW_HEIGHT),
+                    pygame.math.Vector2(0, self.WINDOW_HEIGHT),
+                    pygame.math.Vector2(self.WINDOW_WIDTH, 0)
+                ]
+            )
+        )
 
         self.selected_flight = None
         self.selected_runway = None
@@ -129,6 +143,9 @@ class Game(object):
                 self.selected_flight.draw_selection_box(screen)
             if self.selected_runway is not None:
                 self.selected_runway.draw_selection_circle(screen, self.airfield.get_offset())
+            # TODO: DEBUGGING
+            for path in self.paths:
+                path.draw(screen)
         self.show_fps(screen)
         pygame.display.flip()
     
