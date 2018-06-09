@@ -7,6 +7,7 @@ import pygame.draw as pgdraw
 import pygame.math as pgmath
 
 import colors
+from path import PointsPath
 
 class Flight(object):
     """
@@ -27,6 +28,7 @@ class Flight(object):
         self.y = y
         #self.direction = random.random() * 2.0 * math.pi
         self.direction = random.random() * 360
+        self.path = None
     
 
     def draw(self, screen):
@@ -40,7 +42,23 @@ class Flight(object):
 
     def draw_selection_box(self, screen):
         pgdraw.rect(screen, colors.BLUE, [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE, Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2], Flight.SELECTION_BOX_WIDTH)
-    
+
+    def draw_path(self, screen):
+        if self.path is not None:
+            self.path.draw(screen)
 
     def get_pos(self):
         return pgmath.Vector2(self.x, self.y)
+    
+    def get_direction_vector(self):
+        return pgmath.Vector2(0, 1).rotate(-self.direction)
+    
+    def generate_landing_path(self, runway):
+        points = []
+        my_pos = self.get_pos()
+        points.append(my_pos)
+        points.append(my_pos + self.get_direction_vector() * runway.get_full_length * 0.5)
+        points.append(runway.get_approach_point())
+        points.append(runway.get_start_pos())
+        points.append(runway.get_end_pos())
+        self.path = PointsPath(points)

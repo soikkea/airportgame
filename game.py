@@ -94,6 +94,7 @@ class Game(object):
                             if runway_under_mouse is not None:
                                 self.selected_runway = runway_under_mouse
                                 self.logger.debug("Runway %d selected" % self.selected_runway.number)
+                                self.selected_flight.generate_landing_path(self.selected_runway)
                             else:
                                 self.selected_runway = None
                                 self.selected_flight = flight_under_mouse
@@ -143,6 +144,9 @@ class Game(object):
                 self.selected_flight.draw_selection_box(screen)
             if self.selected_runway is not None:
                 self.selected_runway.draw_selection_circle(screen, self.airfield.get_offset())
+            if ((self.selected_flight is not None) and
+                (self.selected_runway is not None)):
+                self.selected_flight.draw_path(screen) 
             # TODO: DEBUGGING
             for path in self.paths:
                 path.draw(screen)

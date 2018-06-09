@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import math
+import logging
+
 import pygame
 # TODO:
 # from flight import Flight
@@ -30,6 +32,10 @@ class Runway(object):
         self.taken = False
         self.cooldown = 0
         self.length = length
+
+        # Debugging
+        assert(self.length in [1, 2, 3])
+
         self.flight = None
         self.queue = []
         #  Stores the extra time added to the cooldown per flight.
@@ -40,6 +46,7 @@ class Runway(object):
         # TODO: Add Flight.INCOMING_DISTANCE to wait time
         self.cool_down_time = self.wait_time
 
+        self.logger = logging.getLogger(__name__)
         # TODO: Finish
 
 
@@ -96,6 +103,7 @@ class Runway(object):
         draw_text("Consolas", number_size, str(self.number), screen, self.start_pos, colors.BLACK)
     
     def get_full_length(self):
+        assert(self.length in [1, 2, 3])
         if self.length == 1:
             return Runway.RUNWAY_LENGTH_SHORT
         elif self.length == 2:
@@ -103,6 +111,7 @@ class Runway(object):
         elif self.length == 3:
             return Runway.RUNWAY_LENGTH_LONG
         else:
+            self.logger.error("Runway length is None. This should never happen!")
             return None
     
 
@@ -114,8 +123,21 @@ class Runway(object):
 
     def get_start_pos(self):
         return pygame.math.Vector2(self.start_pos)
+
+    def get_end_pos(self):
+        return pygame.math.Vector2(self.end_pos)
     
     def draw_selection_circle(self, screen, offset):
         pos = self.get_start_pos() + offset
         pos = (int(pos.x), int(pos.y))
         pygame.draw.circle(screen, colors.YELLOW, pos, 20, 3)
+
+    def get_direction_vector(self):
+        return pygame.math.Vector2(self.end_pos[0] - self.start_pos[0], self.end_pos[1] - self.start_pos[1]).normalize()
+    
+    def get_approach_point(self):
+        my_vect = self.get_direction_vector()
+        assert(my_vect is not None)
+        assert(self.get_full_length() is not None)
+        return self.get_start_pos() - my_vect * 0.5 * self.get_full_length()
+
