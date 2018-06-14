@@ -23,13 +23,15 @@ class Airfield(object):
         self.max_runways = 10
         self.min_runways = 3
 
+        self.offset = offset
+
+        # Airfield is created here
         self.create_airfield()
 
         self.airfield_map = pygame.Surface((self.FIELD_WIDTH, self.FIELD_HEIGHT))
         self.airfield_map.fill(self.TRANSPARENCY_COLORKEY)
         self.airfield_map.set_colorkey(self.TRANSPARENCY_COLORKEY)
         self.update_map()
-        self.offset = offset
     
     def create_airfield(self):
         """
@@ -109,7 +111,7 @@ class Airfield(object):
             
             self.runways[i] = (start, end)
 
-            new_runway = Runway(start, end, i+1, length)
+            new_runway = Runway(self.add_offset_to_tuple(start), self.add_offset_to_tuple(end), i+1, length)
             self.runway_list.append(new_runway)
 
         return
@@ -150,10 +152,10 @@ class Airfield(object):
 
     def update_map(self):
         for runway in self.runway_list:
-            runway.draw(self.airfield_map)
+            runway.draw(self.airfield_map, self.get_offset())
         
         for runway in self.runway_list:
-            runway.paint(self.airfield_map)
+            runway.paint(self.airfield_map, self.get_offset())
 
     def get_airfield_map(self):
         return self.airfield_map
@@ -163,3 +165,7 @@ class Airfield(object):
     
     def get_offset(self):
         return pygame.math.Vector2(self.offset)
+    
+    def add_offset_to_tuple(self, point):
+        offset_x, offset_y = self.offset
+        return (point[0] + offset_x, point[1] + offset_y)
