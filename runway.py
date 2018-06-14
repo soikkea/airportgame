@@ -8,6 +8,7 @@ import pygame
 # from flight import Flight
 import colors
 from pgtext import draw_text
+from utilities import vec2tuple
 
 class Runway(object):
     """
@@ -54,15 +55,17 @@ class Runway(object):
         return (self.start_pos, self.end_pos)
     
 
-    def draw(self, screen):
+    def draw(self, screen, offset):
         # pygame.draw.line(screen, self.RUNWAY_COLOR, self.start_pos, self.end_pos, 
         # self.RUNWAY_WIDTH)
         runway_background = pygame.Surface((self.RUNWAY_WIDTH, self.get_full_length()), pygame.SRCALPHA)
         runway_background.fill(self.RUNWAY_COLOR)
         runway_background = pygame.transform.rotate(runway_background, self.get_angle())
         w, h = runway_background.get_size()
-        mid_x = (self.start_pos[0] + self.end_pos[0]) / 2 
-        mid_y = (self.start_pos[1] + self.end_pos[1]) / 2
+        start_pos = self.get_unoffsetted_point_tuple(self.start_pos, vec2tuple(offset))
+        end_pos = self.get_unoffsetted_point_tuple(self.end_pos, vec2tuple(offset))
+        mid_x = (start_pos[0] + end_pos[0]) / 2 
+        mid_y = (start_pos[1] + end_pos[1]) / 2
         dest = (mid_x - w / 2, mid_y - h / 2) 
         screen.blit(runway_background, dest)
         # DEBUG:
@@ -70,7 +73,7 @@ class Runway(object):
         # pygame.draw.circle(screen, (255, 0, 0), self.end_pos, 5, 5)
     
 
-    def paint(self, screen):
+    def paint(self, screen, offset):
         runway_background = pygame.Surface((self.RUNWAY_WIDTH, self.get_full_length()), pygame.SRCALPHA)
 
         edge_offset = 5
@@ -94,13 +97,15 @@ class Runway(object):
 
         runway_background = pygame.transform.rotate(runway_background, self.get_angle())
         w, h = runway_background.get_size()
-        mid_x = (self.start_pos[0] + self.end_pos[0]) / 2 
-        mid_y = (self.start_pos[1] + self.end_pos[1]) / 2
+        start_pos = self.get_unoffsetted_point_tuple(self.start_pos, vec2tuple(offset))
+        end_pos = self.get_unoffsetted_point_tuple(self.end_pos, vec2tuple(offset))
+        mid_x = (start_pos[0] + end_pos[0]) / 2 
+        mid_y = (start_pos[1] + end_pos[1]) / 2
         dest = (mid_x - w / 2, mid_y - h / 2) 
         screen.blit(runway_background, dest)
 
         # Draw the runway number
-        draw_text("Consolas", number_size, str(self.number), screen, self.start_pos, colors.BLACK)
+        draw_text("Consolas", number_size, str(self.number), screen, self.get_unoffsetted_point_tuple(self.start_pos, vec2tuple(offset)), colors.BLACK)
     
     def get_full_length(self):
         assert(self.length in [1, 2, 3])
@@ -140,4 +145,7 @@ class Runway(object):
         assert(my_vect is not None)
         assert(self.get_full_length() is not None)
         return self.get_start_pos() - my_vect * 0.5 * self.get_full_length()
+    
+    def get_unoffsetted_point_tuple(self, point, offset):
+        return (point[0] - offset[0], point[1] - offset[1])
 
