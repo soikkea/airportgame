@@ -53,7 +53,9 @@ class Runway(object):
 
     def get_start_and_end_pos(self):
         return (self.start_pos, self.end_pos)
-    
+
+    def get_number(self):
+        return self.number
 
     def draw(self, screen, offset):
         # pygame.draw.line(screen, self.RUNWAY_COLOR, self.start_pos, self.end_pos, 

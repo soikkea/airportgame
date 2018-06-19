@@ -212,11 +212,11 @@ class Game(object):
         closest_distance = max_range
         point = pygame.math.Vector2(x, y)
         for runway in self.airfield.get_runways():
-            distance = point.distance_to(runway.get_start_pos() + self.airfield.get_offset())
+            distance = point.distance_to(runway.get_start_pos())
             if distance < closest_distance:
                 closest_distance = distance
                 closest_runway = runway
         # DEBUG
         if closest_runway is not None:
-            self.logger.debug("Clicked at: %s, runway at: %s" % (point, (closest_runway.get_start_pos() + self.airfield.get_offset())))
+            self.logger.debug("Clicked at: %s, runway #%d at: %s" % (point, closest_runway.get_number(), (closest_runway.get_start_pos())))
         return closest_runway
