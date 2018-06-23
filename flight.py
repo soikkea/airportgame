@@ -57,7 +57,7 @@ class Flight(object):
         points = []
         my_pos = self.get_pos()
         points.append(my_pos)
-        points.append(my_pos + self.get_direction_vector() * runway.get_full_length * 0.5)
+        points.append(my_pos + self.get_direction_vector() * runway.get_full_length() * 0.5)
         points.append(runway.get_approach_point())
         points.append(runway.get_start_pos())
         points.append(runway.get_end_pos())

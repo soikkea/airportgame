@@ -143,7 +143,7 @@ class Game(object):
             if self.selected_flight is not None:
                 self.selected_flight.draw_selection_box(screen)
             if self.selected_runway is not None:
-                self.selected_runway.draw_selection_circle(screen, self.airfield.get_offset())
+                self.selected_runway.draw_selection_circle(screen)
             if ((self.selected_flight is not None) and
                 (self.selected_runway is not None)):
                 self.selected_flight.draw_path(screen) 

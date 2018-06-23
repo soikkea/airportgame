@@ -134,8 +134,8 @@ class Runway(object):
     def get_end_pos(self):
         return pygame.math.Vector2(self.end_pos)
     
-    def draw_selection_circle(self, screen, offset):
-        pos = self.get_start_pos() + offset
+    def draw_selection_circle(self, screen):
+        pos = self.get_start_pos()
         pos = (int(pos.x), int(pos.y))
         pygame.draw.circle(screen, colors.YELLOW, pos, 20, 3)
 
