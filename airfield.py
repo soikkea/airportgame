@@ -14,7 +14,7 @@ class Airfield(object):
     FIELD_HEIGHT = 200
     FIELD_WIDTH = 400
 
-    MINIMUM_DISTANCE = 30
+    MINIMUM_DISTANCE = 60
     TRANSPARENCY_COLORKEY = (1, 2, 3)
 
     def __init__(self, offset=(0, 0)):
