@@ -40,18 +40,6 @@ class Game(object):
         self.incoming_flights = []
         self.paths = []
 
-        # TODO: DEBUGGING
-        self.paths.append(
-            PointsPath(
-                [
-                    pygame.math.Vector2(0, 0),
-                    pygame.math.Vector2(self.WINDOW_WIDTH, self.WINDOW_HEIGHT),
-                    pygame.math.Vector2(0, self.WINDOW_HEIGHT),
-                    pygame.math.Vector2(self.WINDOW_WIDTH, 0)
-                ]
-            )
-        )
-
         self.selected_flight = None
         self.selected_runway = None
 
@@ -128,6 +116,8 @@ class Game(object):
         else:
             # Game is running normally
             self.create_flight(elapsed_time)
+            for flight in self.incoming_flights:
+                flight.update(elapsed_time)
         return True
     
     def draw(self, screen):

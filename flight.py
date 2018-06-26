@@ -17,6 +17,7 @@ class Flight(object):
     WAITING_DISTANCE = 60
     ICON_SIZE = 5
     SELECTION_BOX_WIDTH = 2
+    SPEED = 0.01
 
     def __init__(self, name, plane, x=0, y=0):
         """
@@ -29,6 +30,7 @@ class Flight(object):
         #self.direction = random.random() * 2.0 * math.pi
         self.direction = random.random() * 360
         self.path = None
+        self.path_pos = None
     
 
     def draw(self, screen):
@@ -38,7 +40,17 @@ class Flight(object):
         new_x = int(vect_point[0])
         new_y = int(vect_point[1])
         pgdraw.line(screen, (0, 0, 0,), (self.x, self.y), (new_x, new_y))
-    
+
+    def update(self, elapsed_time):
+        if self.path is not None:
+            distance_travelled = elapsed_time * self.SPEED
+            self.path_pos += distance_travelled
+            new_pos = self.path.get_point_along_path(self.path_pos)
+            self.update_pos(new_pos)
+            
+    def update_pos(self, vector_pos):
+        self.x = int(vector_pos[0])
+        self.y = int(vector_pos[1])   
 
     def draw_selection_box(self, screen):
         pgdraw.rect(screen, colors.BLUE, [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE, Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2], Flight.SELECTION_BOX_WIDTH)
@@ -62,3 +74,4 @@ class Flight(object):
         points.append(runway.get_start_pos())
         points.append(runway.get_end_pos())
         self.path = PointsPath(points)
+        self.path_pos = 0.0
