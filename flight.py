@@ -8,6 +8,7 @@ import pygame.math as pgmath
 
 import colors
 from path import PointsPath
+from utilities import vec2int
 
 class Flight(object):
     """
@@ -34,7 +35,7 @@ class Flight(object):
     
 
     def draw(self, screen):
-        pgdraw.circle(screen, (0, 0, 0), (self.x, self.y), self.ICON_SIZE, 0)
+        pgdraw.circle(screen, (0, 0, 0), vec2int(self.get_pos()), self.ICON_SIZE, 0)
         dir_vect = pgmath.Vector2(0, 1).rotate(-self.direction) * Flight.ICON_SIZE * 2
         vect_point = dir_vect + self.get_pos()
         new_x = int(vect_point[0])
@@ -46,11 +47,17 @@ class Flight(object):
             distance_travelled = elapsed_time * self.SPEED
             self.path_pos += distance_travelled
             new_pos = self.path.get_point_along_path(self.path_pos)
+            old_pos = self.get_pos()
             self.update_pos(new_pos)
+            self.rotate_to_vector(new_pos-old_pos)
+    
+    def rotate_to_vector(self, vec):
+        if vec.length() > 0.0:
+            self.direction = -pgmath.Vector2(0, 1).angle_to(vec)
             
     def update_pos(self, vector_pos):
-        self.x = int(vector_pos[0])
-        self.y = int(vector_pos[1])   
+        self.x = vector_pos[0]
+        self.y = vector_pos[1]
 
     def draw_selection_box(self, screen):
         pgdraw.rect(screen, colors.BLUE, [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE, Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2], Flight.SELECTION_BOX_WIDTH)
