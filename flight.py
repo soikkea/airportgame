@@ -42,6 +42,9 @@ class Flight(object):
         new_y = int(vect_point[1])
         pgdraw.line(screen, (0, 0, 0,), (self.x, self.y), (new_x, new_y))
 
+        if (self.path is not None):
+            self.path.draw_subpath(screen, self.path_pos)
+
     def update(self, elapsed_time):
         if self.path is not None:
             distance_travelled = elapsed_time * self.SPEED

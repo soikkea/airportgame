@@ -31,6 +31,13 @@ class PointsPath(Path):
             pygame.draw.line(screen, colors.BLUE, vec2int(previous_point), vec2int(point), 2)
             previous_point = point
     
+    def draw_subpath(self, screen, distance):
+        subpath = self.get_subpath(distance)
+        previous_point = subpath[0]
+        for point in subpath[1:]:
+            pygame.draw.line(screen, colors.BLUE, vec2int(previous_point), vec2int(point), 2)
+            previous_point = point
+    
     def get_length(self):
         length = 0.0
         previous_point = self.points[0]
@@ -38,6 +45,27 @@ class PointsPath(Path):
             length += previous_point.distance_to(point)
             previous_point = point
         return length
+    
+    def get_subpath(self, distance):
+        if distance > self.length:
+            return self.points[-1:]
+        if distance < 0.0:
+            return self.points[0:]
+        length = 0.0
+        previous_point = self.points[0]
+        for i, point in enumerate(self.points[1:]):
+            current_length = previous_point.distance_to(point)
+            if length <= distance and distance <= length + current_length:
+                # Point in this part
+                relative_distance = distance - length
+                dir_vector = (point - previous_point).normalize()
+
+                return [previous_point + dir_vector * relative_distance] + self.points[i + 1:]
+            else:
+                length += current_length
+            previous_point = point
+        self.logger.warning("This should never happen!")
+        return self.points[-1:]
     
     def get_point_along_path(self, distance):
         if distance > self.length:
@@ -49,7 +77,7 @@ class PointsPath(Path):
         for point in self.points[1:]:
             current_length = previous_point.distance_to(point)
             if length <= distance and distance <= length + current_length:
-                # Point in this leg
+                # Point in this part
                 relative_distance = distance - length
                 dir_vector = (point - previous_point).normalize()
                 return previous_point + dir_vector * relative_distance
