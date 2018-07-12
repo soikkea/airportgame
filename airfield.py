@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import random
 import math
 
 import pygame
 
 from runway import Runway
+
 
 class Airfield(object):
     """
@@ -14,11 +16,12 @@ class Airfield(object):
     FIELD_HEIGHT = 200
     FIELD_WIDTH = 400
 
-    MINIMUM_DISTANCE = 90
+    MINIMUM_DISTANCE = 40
     TRANSPARENCY_COLORKEY = (1, 2, 3)
 
     def __init__(self, offset=(0, 0)):
-        self.runway_list = []
+        self.logger = logging.getLogger(__name__ + "." + type(self).__name__)
+        
         # TODO: airfield size based on difficulty
         self.max_runways = 10
         self.min_runways = 3
@@ -26,6 +29,13 @@ class Airfield(object):
         self.offset = offset
 
         # Airfield is created here
+        self.reset_airfield()
+    
+    def reset_airfield(self):
+        """Reset current airfield and create a new one"""
+        self.logger.debug("Resetting airfield")
+        self.runway_list = []
+
         self.create_airfield()
 
         self.airfield_map = pygame.Surface((self.FIELD_WIDTH, self.FIELD_HEIGHT))
@@ -101,6 +111,7 @@ class Airfield(object):
 
                 if temp == 10000:
                     # Just use this one if we actually end up here
+                    self.logger.warn("Unoptimal runway end point for runway #{:d} !".format(i + 1))
                     end_point_found = True
             
             # start point should be to the left of end:
@@ -144,6 +155,9 @@ class Airfield(object):
         for runway_i in range(index):
             runway = self.runway_list[runway_i]
             start, end = runway.get_start_and_end_pos()
+            start = self.remove_offset_from_tuple(start)
+            end = self.remove_offset_from_tuple(end)
+
             if (self.distance_between(point, start) < self.MINIMUM_DISTANCE or
                 self.distance_between(point, end) < self.MINIMUM_DISTANCE):
                 return False
@@ -169,3 +183,7 @@ class Airfield(object):
     def add_offset_to_tuple(self, point):
         offset_x, offset_y = self.offset
         return (point[0] + offset_x, point[1] + offset_y)
+    
+    def remove_offset_from_tuple(self, point):
+        offset_x, offset_y = self.offset
+        return (point[0] - offset_x, point[1] - offset_y)

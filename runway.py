@@ -9,6 +9,7 @@ import pygame
 import colors
 from pgtext import draw_text
 from utilities import vec2tuple
+import airfield
 
 class Runway(object):
     """
@@ -71,8 +72,8 @@ class Runway(object):
         dest = (mid_x - w / 2, mid_y - h / 2) 
         screen.blit(runway_background, dest)
         # DEBUG:
-        # pygame.draw.circle(screen, (255, 0, 0), self.start_pos, 5, 5)
-        # pygame.draw.circle(screen, (255, 0, 0), self.end_pos, 5, 5)
+        # pygame.draw.circle(screen, (255, 0, 0), [int(x) for x in start_pos], int(airfield.Airfield.MINIMUM_DISTANCE), 5)
+        # pygame.draw.circle(screen, (255, 0, 0), [int(x) for x in end_pos], int(airfield.Airfield.MINIMUM_DISTANCE), 5)
     
 
     def paint(self, screen, offset):

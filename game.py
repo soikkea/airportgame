@@ -68,6 +68,10 @@ class Game(object):
                 if (event.type == pygame.KEYDOWN and 
                     event.key == pygame.K_ESCAPE):
                     running = False
+                if (event.type == pygame.KEYDOWN):
+                    if event.key == pygame.K_r:
+                        if self.airfield is not None:
+                            self.airfield.reset_airfield()
                 if self.player is not None:
                     # Only do this if game is properly initialized
                     if event.type == pygame.MOUSEBUTTONUP:
