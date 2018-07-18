@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import abc
 
 import pygame
 
@@ -86,3 +87,48 @@ class PointsPath(Path):
             previous_point = point
         self.logger.warning("This should never happen!")
         return self.points[-1]
+
+
+class PathEnsemble(abc.ABC):
+    def __init__(self):
+        self.paths = []
+        self.length = 0.0
+    
+    def draw(self, screen):
+        for path in self.paths:
+            path.draw(screen)
+    
+    def calculate_length(self):
+        self.length = 0.0
+        for path in self.paths:
+            self.length += path.length
+
+
+class RectanglePathEnsemble(PathEnsemble):
+    def __init__(self, top_left, bottom_right):
+        super().__init__()
+        self.left_x = top_left[0]
+        self.top_y = top_left[1]
+        self.right_x = bottom_right[0]
+        self.bottom_y = bottom_right[1]
+        self.width = self.right_x - self.left_x
+        self.height = self.bottom_y - self.top_y
+
+        p1 = [(self.left_x + self.width * 0.5, self.top_y), 
+              (self.right_x, self.top_y)]
+        p2 = [(self.right_x, self.top_y), 
+              (self.right_x, self.bottom_y)]
+        p3 = [(self.right_x, self.bottom_y),
+              (self.left_x, self.bottom_y)]
+        p4 = [(self.left_x, self.bottom_y),
+              (self.left_x, self.top_y)]
+        p5 = [(self.left_x, self.top_y), 
+              (self.left_x + self.width * 0.5, self.top_y)]
+        
+        for p in [p1, p2, p3, p4, p5]:
+            to_vec = [pygame.math.Vector2(x) for x in p]
+            path = PointsPath(to_vec)
+            self.paths.append(path)
+        
+        self.calculate_length()
+

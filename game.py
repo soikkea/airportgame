@@ -12,7 +12,7 @@ from pgtext import PgText
 from player import Player
 from airfield import Airfield
 from flight import Flight
-from path import PointsPath
+from path import PointsPath, RectanglePathEnsemble
 
 
 class Game(object):
@@ -39,6 +39,9 @@ class Game(object):
         self.time_since_last_flight_created = 0
         self.incoming_flights = []
         self.paths = []
+
+        # TODO: REMOVE
+        self.paths.append(RectanglePathEnsemble((10, 10), (100, 100)))
 
         self.selected_flight = None
         self.selected_runway = None
