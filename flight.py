@@ -10,6 +10,7 @@ import colors
 from path import PointsPath
 from utilities import vec2int
 
+
 class Flight(object):
     """
     A class representing a single flight
@@ -32,10 +33,11 @@ class Flight(object):
         self.direction = random.random() * 360
         self.path = None
         self.path_pos = None
-    
+        self._landing = False
 
     def draw(self, screen):
-        pgdraw.circle(screen, (0, 0, 0), vec2int(self.get_pos()), self.ICON_SIZE, 0)
+        pgdraw.circle(screen, (0, 0, 0), vec2int(self.get_pos()), 
+                      self.ICON_SIZE, 0)
         dir_vect = pgmath.Vector2(0, 1).rotate(-self.direction) * Flight.ICON_SIZE * 2
         vect_point = dir_vect + self.get_pos()
         new_x = int(vect_point[0])
@@ -63,7 +65,10 @@ class Flight(object):
         self.y = vector_pos[1]
 
     def draw_selection_box(self, screen):
-        pgdraw.rect(screen, colors.BLUE, [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE, Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2], Flight.SELECTION_BOX_WIDTH)
+        pgdraw.rect(screen, colors.BLUE, 
+                    [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE, 
+                    Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2], 
+                    Flight.SELECTION_BOX_WIDTH)
 
     def draw_path(self, screen):
         if self.path is not None:
@@ -79,9 +84,14 @@ class Flight(object):
         points = []
         my_pos = self.get_pos()
         points.append(my_pos)
-        points.append(my_pos + self.get_direction_vector() * runway.get_full_length() * 0.5)
+        points.append(my_pos + self.get_direction_vector() 
+                      * runway.get_full_length() * 0.5)
         points.append(runway.get_approach_point())
         points.append(runway.get_start_pos())
         points.append(runway.get_end_pos())
         self.path = PointsPath(points)
         self.path_pos = 0.0
+        self._landing = True
+    
+    def is_landing(self):
+        return self._landing
