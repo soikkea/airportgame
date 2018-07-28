@@ -21,6 +21,7 @@ class Game(object):
     '''
     WINDOW_WIDTH = 800
     WINDOW_HEIGHT = 600
+    BORDER_MARGIN = 15
 
     def __init__(self):
         '''
@@ -40,16 +41,14 @@ class Game(object):
         self.incoming_flights = []
         self.paths = []
 
-        # TODO: REMOVE
-        self.paths.append(RectanglePathEnsemble((10, 10), (100, 100)))
-
         self.selected_flight = None
         self.selected_runway = None
 
         self.logger = logging.getLogger(__name__)
 
         # Screen surface that has the size of 800 x 600
-        self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
+        self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, 
+                                               self.WINDOW_HEIGHT))
         # Start game loop
         self.game_loop()
 
@@ -120,6 +119,7 @@ class Game(object):
                 # TODO: Choose difficulty
                 # TODO: Initialize Airfield
                 self.airfield = Airfield(offset=self.center_airfield())
+                self.create_circling_flight_paths()
         else:
             # Game is running normally
             self.create_flight(elapsed_time)
@@ -201,7 +201,8 @@ class Game(object):
                 closest_flight = flight
         return closest_flight
     
-    def find_closest_runway_in_range(self, x, y, max_range=Airfield.MINIMUM_DISTANCE):
+    def find_closest_runway_in_range(self, x, y, 
+                                     max_range=Airfield.MINIMUM_DISTANCE):
         """
         Returns the closest runway within max_range.
         """
@@ -217,3 +218,35 @@ class Game(object):
         if closest_runway is not None:
             self.logger.debug("Clicked at: %s, runway #%d at: %s" % (point, closest_runway.get_number(), (closest_runway.get_start_pos())))
         return closest_runway
+
+    def create_circling_flight_paths(self, n=3):
+        left_x1 = Game.BORDER_MARGIN
+        airfield_offset = self.airfield.get_offset()
+        left_x2 = airfield_offset[0] - Game.BORDER_MARGIN
+        assert left_x1 < left_x2
+        right_x1 = (airfield_offset[0] + self.airfield.FIELD_WIDTH 
+                                       + Game.BORDER_MARGIN)
+        right_x2 = Game.WINDOW_WIDTH - Game.BORDER_MARGIN
+        assert right_x1 < right_x2
+        top_y1 = Game.BORDER_MARGIN
+        top_y2 = airfield_offset[1] - Game.BORDER_MARGIN
+        assert top_y1 < top_y2
+        bottom_y1 = (airfield_offset[1] + self.airfield.FIELD_HEIGHT 
+                                        + Game.BORDER_MARGIN)
+        bottom_y2 = Game.WINDOW_HEIGHT - Game.BORDER_MARGIN
+        assert bottom_y1 < bottom_y2
+
+        left_dx = (left_x2 - left_x1) / (n - 1)
+        right_dx = (right_x2 - right_x1) / (n - 1)
+        top_dy = (top_y2 - top_y1) / (n - 1)
+        bottom_dy = (bottom_y2 - bottom_y1) / (n - 1)
+
+        top_left = pygame.math.Vector2(left_x1, top_y1)
+        bottom_right = pygame.math.Vector2(right_x2, bottom_y2)
+
+        d_top_left = pygame.math.Vector2(left_dx, top_dy)
+        d_bottom_right = pygame.math.Vector2(right_dx, bottom_dy)
+        for i in range(n):
+            xy1 = top_left + i * d_top_left
+            xy2 = bottom_right - i * d_bottom_right
+            self.paths.append(RectanglePathEnsemble(xy1, xy2))

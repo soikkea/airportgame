@@ -5,6 +5,7 @@ import pygame
 
 from game import Game
 
+
 # The main function
 def main():
     # Initialize logging
@@ -22,6 +23,7 @@ def main():
     
     logger.debug("Quiting the game")
     pygame.quit()
+    
     
 if __name__ == "__main__":
     main()
