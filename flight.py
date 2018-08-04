@@ -44,7 +44,7 @@ class Flight(object):
         new_y = int(vect_point[1])
         pgdraw.line(screen, (0, 0, 0,), (self.x, self.y), (new_x, new_y))
 
-        if (self.path is not None):
+        if (self.path is not None and self.is_landing()):
             self.path.draw_subpath(screen, self.path_pos)
 
     def update(self, elapsed_time):
@@ -95,3 +95,8 @@ class Flight(object):
     
     def is_landing(self):
         return self._landing
+    
+    def set_path(self, path):
+        """Set path that is not a landing path."""
+        self.path = path
+        self.path_pos = 0.0

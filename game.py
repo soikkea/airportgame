@@ -124,6 +124,12 @@ class Game(object):
             # Game is running normally
             self.create_flight(elapsed_time)
             for flight in self.incoming_flights:
+
+                #TODO: DEBUG
+                if flight.path is None:
+                    path_num = random.randint(0, len(self.paths) - 1)
+                    flight.set_path(self.paths[path_num])
+
                 flight.update(elapsed_time)
         return True
     
