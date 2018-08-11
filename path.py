@@ -94,9 +94,10 @@ class PointsPath(Path):
 
 
 class PathEnsemble(abc.ABC):
-    def __init__(self):
+    def __init__(self, circular=False):
         self.paths = []
         self.length = 0.0
+        self.circular = circular
 
     def draw(self, screen):
         for path in self.paths:
@@ -109,6 +110,13 @@ class PathEnsemble(abc.ABC):
 
     def get_point_along_path(self, distance):
         length = 0.0
+        if self.circular:
+            if distance < 0.0:
+                while distance < 0.0:
+                    distance += self.length
+            elif distance > self.length:
+                while distance > self.length:
+                    distance -= self.length
         for path in self.paths:
             if length <= distance <= length + path.length:
                 return path.get_point_along_path(distance - length)
@@ -120,8 +128,8 @@ class PathEnsemble(abc.ABC):
 
 
 class RectanglePathEnsemble(PathEnsemble):
-    def __init__(self, top_left, bottom_right):
-        super().__init__()
+    def __init__(self, top_left, bottom_right, **kwargs):
+        super().__init__(kwargs)
         self.left_x = top_left[0]
         self.top_y = top_left[1]
         self.right_x = bottom_right[0]

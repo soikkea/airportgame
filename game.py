@@ -255,4 +255,4 @@ class Game(object):
         for i in range(n):
             xy1 = top_left + i * d_top_left
             xy2 = bottom_right - i * d_bottom_right
-            self.paths.append(RectanglePathEnsemble(xy1, xy2))
+            self.paths.append(RectanglePathEnsemble(xy1, xy2, circular=True))
