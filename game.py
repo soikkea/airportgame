@@ -23,7 +23,7 @@ class Game(object):
     WINDOW_HEIGHT = 600
     BORDER_MARGIN = 15
 
-    def __init__(self):
+    def __init__(self, skip_name_input=False):
         '''
         Constructor
         '''
@@ -43,6 +43,8 @@ class Game(object):
 
         self.selected_flight = None
         self.selected_runway = None
+
+        self.skip_name_input = skip_name_input
 
         self.logger = logging.getLogger(__name__)
 
@@ -107,19 +109,21 @@ class Game(object):
         '''
         # A new player must be created:
         if self.player is None:
-            if not self.textinput.is_active():
-                self.textinput.activate()
-                self.textinput.set_pos(100, 150)
-            if self.textinput.was_return_pressed():
-                if len(self.textinput.get_value()) > 0:
-                    self.player = Player(self.textinput.get_value())
-                else:
-                    self.player = Player("I am too important to input a name.")
-                self.textinput.deactivate
-                # TODO: Choose difficulty
-                # TODO: Initialize Airfield
-                self.airfield = Airfield(offset=self.center_airfield())
-                self.create_circling_flight_paths()
+            if not self.skip_name_input:
+                if not self.textinput.is_active():
+                    self.textinput.activate()
+                    self.textinput.set_pos(100, 150)
+                if self.textinput.was_return_pressed():
+                    if len(self.textinput.get_value()) > 0:
+                        self.player = Player(self.textinput.get_value())
+                    else:
+                        self.player = Player("I am too important to input a name.")
+                    self.textinput.deactivate
+                    # TODO: Choose difficulty
+            else:
+                self.player = Player("Debug Mode On")
+            self.airfield = Airfield(offset=self.center_airfield())
+            self.create_circling_flight_paths()
         else:
             # Game is running normally
             self.create_flight(elapsed_time)

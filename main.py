@@ -6,6 +6,10 @@ import pygame
 from game import Game
 
 
+# TODO: Turn this off when game ready
+SKIP_NAME_INPUT = True
+
+
 # The main function
 def main():
     # Initialize logging
@@ -19,7 +23,7 @@ def main():
 
     # Initialize game
     logger.debug("Initializing game")
-    game = Game()
+    game = Game(skip_name_input=SKIP_NAME_INPUT)
     
     logger.debug("Quiting the game")
     pygame.quit()
