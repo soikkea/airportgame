@@ -129,12 +129,14 @@ class Game(object):
             self.create_flight(elapsed_time)
             for flight in self.incoming_flights:
 
-                #TODO: DEBUG
+                #TODO: DEBUG, Make this better
                 if flight.path is None:
                     path_num = random.randint(0, len(self.paths) - 1)
                     flight.set_path(self.paths[path_num])
 
                 flight.update(elapsed_time)
+            
+            self.remove_landed_flights()
         return True
     
     def draw(self, screen):
@@ -260,3 +262,10 @@ class Game(object):
             xy1 = top_left + i * d_top_left
             xy2 = bottom_right - i * d_bottom_right
             self.paths.append(RectanglePathEnsemble(xy1, xy2, circular=True))
+
+    def remove_landed_flights(self):
+        for i in range(len(self.incoming_flights) -1, -1, -1):
+            if self.incoming_flights[i].get_status() == Flight.STATUS_LANDED:
+                if id(self.incoming_flights[i]) == id(self.selected_flight):
+                    self.selected_flight = None
+                del self.incoming_flights[i]

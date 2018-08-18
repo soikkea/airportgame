@@ -8,21 +8,25 @@ import pygame
 import colors
 from utilities import vec2int
 
-# TODO: Abstract class
 
-
-class Path(object):
+class Path(abc.ABC):
 
     def __init__(self):
+        self.length = 0.0
         pass
 
+    @abc.abstractmethod
     def draw(self, screen):
-        pass
+        raise NotImplementedError
+
+    def is_over(self, distance):
+        return self.length <= distance
 
 
 class PointsPath(Path):
 
     def __init__(self, points):
+        super().__init__()
         self.points = points
         self.length = self.get_length()
         assert(self.length is not None)

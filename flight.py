@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import random
 import math
 
@@ -21,6 +22,11 @@ class Flight(object):
     SELECTION_BOX_WIDTH = 2
     SPEED = 0.01
 
+    # Status codes
+    STATUS_NORMAL = 0
+    STATUS_LANDING = 1
+    STATUS_LANDED = 2
+
     def __init__(self, name, plane, x=0, y=0):
         """
         plane must be a Plane object
@@ -33,7 +39,8 @@ class Flight(object):
         self.direction = random.random() * 360
         self.path = None
         self.path_pos = None
-        self._landing = False
+        self._status = Flight.STATUS_NORMAL
+        self.logger = logging.getLogger(__name__)
 
     def draw(self, screen):
         pgdraw.circle(screen, (0, 0, 0), vec2int(self.get_pos()), 
@@ -55,6 +62,10 @@ class Flight(object):
             old_pos = self.get_pos()
             self.update_pos(new_pos)
             self.rotate_to_vector(new_pos-old_pos)
+            if self._status == Flight.STATUS_LANDING:
+                if self.path.is_over(self.path_pos):
+                    self._status = Flight.STATUS_LANDED
+                    self.logger.debug("FLIGHT HAS LANDED")
     
     def rotate_to_vector(self, vec):
         if vec.length() > 0.0:
@@ -91,12 +102,15 @@ class Flight(object):
         points.append(runway.get_end_pos())
         self.path = PointsPath(points)
         self.path_pos = 0.0
-        self._landing = True
+        self._status = Flight.STATUS_LANDING
     
     def is_landing(self):
-        return self._landing
+        return self._status == Flight.STATUS_LANDING
     
     def set_path(self, path):
         """Set path that is not a landing path."""
         self.path = path
         self.path_pos = 0.0
+    
+    def get_status(self):
+        return self._status
