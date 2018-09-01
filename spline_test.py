@@ -28,6 +28,9 @@ def main():
                 running = False
             if (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
+            if (event.type == pygame.KEYDOWN and event.key == pygame.K_c):
+                points.clear()
+                spline = None
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 points.append((mouse_x, mouse_y))
