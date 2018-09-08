@@ -61,3 +61,17 @@ class CatmullRom(object):
     
     def clear(self):
         self._points.clear()
+    
+    def get_length(self, n=85):
+        total_length = 0
+        points_per_segment = np.zeros((n, 2))
+        for segment in range(self._n_points - 1):
+            for i, t in enumerate(np.linspace(0, 1, num=n)):
+                points_per_segment[i, :] = self.get_point(segment, t)
+            total_length += np.sum(
+                np.linalg.norm(
+                    np.diff(points_per_segment, axis=0),
+                    axis=1
+                )
+            )
+        return total_length

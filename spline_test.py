@@ -6,13 +6,16 @@ logger = logging.getLogger(__name__)
 
 import pygame
 
-from colors import BLACK, RED
+from colors import BLACK, RED, WHITE
+import pgtext
 import splines
 
 def main():
     pygame.init()
 
     screen = pygame.display.set_mode((800, 600))
+
+    texter = pgtext.PgText("Consolas")
 
     points = []
 
@@ -40,11 +43,14 @@ def main():
         
         # *** DRAWING ***
         screen.fill(BLACK)
+        spline_length = -1
         if spline is not None:
             spline.draw(screen)
+            spline_length = spline.get_length()
         for point in points:
             pygame.draw.circle(screen, RED, point, 5)
             #logger.debug("Point drawn at x: %d, y: %d", *point)
+        texter.display_text(f"{spline_length}", screen, color=WHITE)
         pygame.display.flip()
 
 
