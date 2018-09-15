@@ -18,6 +18,8 @@ class CatmullRom(object):
     def __init__(self, points):
         self._points = points
         self._n_points = len(points)
+        self.segment_lengths = None
+        self.length = self.get_length()
     
     def get_point(self, start_point, t):
         pg_matrix = self._get_pg(start_point)
@@ -65,13 +67,29 @@ class CatmullRom(object):
     def get_length(self, n=85):
         total_length = 0
         points_per_segment = np.zeros((n, 2))
+        self.segment_lengths = []
         for segment in range(self._n_points - 1):
             for i, t in enumerate(np.linspace(0, 1, num=n)):
                 points_per_segment[i, :] = self.get_point(segment, t)
-            total_length += np.sum(
+            segment_length = np.sum(
                 np.linalg.norm(
                     np.diff(points_per_segment, axis=0),
                     axis=1
                 )
             )
+            self.segment_lengths.append(segment_length)
+            total_length += segment_length
         return total_length
+    
+    def get_point_by_length(self, length):
+        try:
+            length = length % self.length
+        except ZeroDivisionError:
+            return self._points[0]
+        cum_length = 0
+        for i, segment in enumerate(self.segment_lengths):
+            if cum_length <= length <= cum_length + segment:
+                length -= cum_length
+                return self.get_point(i, length / segment)
+            else:
+                cum_length += segment
