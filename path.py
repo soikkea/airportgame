@@ -3,6 +3,7 @@
 import logging
 import abc
 
+import numpy as np
 import pygame
 
 import colors
@@ -11,13 +12,26 @@ from utilities import vec2int
 
 class Path(abc.ABC):
 
-    def __init__(self):
+    def __init__(self, points):
+        self.points = points
         self.length = 0.0
-        pass
+        self.logger = logging.getLogger(__name__ + type(self).__name__)
 
     @abc.abstractmethod
     def draw(self, screen):
-        raise NotImplementedError
+        raise NotImplementedError()
+    
+    @abc.abstractmethod
+    def draw_subpath(self, screen, distance):
+        raise NotImplementedError()
+    
+    @abc.abstractmethod
+    def get_length(self):
+        raise NotImplementedError()
+        
+    @abc.abstractmethod
+    def get_point_along_path(self):
+        raise NotImplementedError()
 
     def is_over(self, distance):
         return self.length <= distance
@@ -26,11 +40,9 @@ class Path(abc.ABC):
 class PointsPath(Path):
 
     def __init__(self, points):
-        super().__init__()
-        self.points = points
+        super().__init__(points)
         self.length = self.get_length()
         assert(self.length is not None)
-        self.logger = logging.getLogger(__name__)
 
     def draw(self, screen):
         previous_point = self.points[0]
@@ -95,6 +107,77 @@ class PointsPath(Path):
             previous_point = point
         self.logger.warning("This should never happen!")
         return self.points[-1]
+
+
+class CatmullRomPath(Path):
+    CATMULL_ROM = 0.5 * np.array(
+        [
+            [0., -1.,  2., -1.],
+            [2.,  0., -5.,  3.],
+            [0.,  1.,  4., -3.],
+            [0.,  0., -1.,  1.]
+        ]
+    )
+
+    def __init__(self, points, n=85):
+        super().__init__(points)
+        self._n_points = len(self.points)
+        self.segment_lengths = None
+        self.length = self.get_length()
+        self.n = n
+    
+    def draw(self, screen):
+        div = 1.0 / self.n
+        for segment in range(0, self._n_points - 1):
+            previous_point = vec2int(self.points[segment])
+            for t in np.linspace(div, 1, n):
+                point = vec2int(self.get_point(segment, t))
+                pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
+    
+    def draw_subpath(self, screen, distance):
+        segment_start, t = self.find_segment(distance):
+        div = 1.0 / self.n
+        previous_point = self.get_point(segment_start, t)
+        for segment in range(segment_start, self._n_points - 1):
+            for t in np.linspace(div, 1, n):
+                point = vec2int(self.get_point(segment, t))
+                pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
+            previous_point = point
+
+    def find_segment(self, distance):
+        if distance > self.length:
+            return self._n_points - 2, 1.0
+        total_length = 0.0
+        for i, segment in enumerate(self.segment_lengths):
+            if total_length <= distance < total_length + segment:
+                return i, (distance - total_length) / segment
+            else:
+                total_length += segment
+        return return self._n_points - 2, 1.0
+
+    def get_length(self):
+        total_length = 0.0
+        points_per_segment = np.zeros((self.n, 2))
+        self.segment_lengths = [0] * (self._n_points - 1)
+        for segment in range(self._n_points - 1):
+            for i, t in enumerate(np.linspace(0, 1, num=self.n)):
+                points_per_segment[i, :] = self.get_point(segment, t)
+            segment_length = np.sum(
+                np.linalg.norm(
+                    np.diff(points_per_segment, axis=0), axis=1
+                )
+            )
+            self.segment_lengths.append(segment_length)
+            total_length += segment_length
+        return total_length
+    
+    def get_point_along_path(self, distance):
+        try:
+            distance = distance % self.length
+        except ZeroDivisionError:
+            return self.points[0]
+        segment, t = self.find_segment(distance)
+        return self.get_point(segment, t)
 
 
 class PathEnsemble(abc.ABC):
