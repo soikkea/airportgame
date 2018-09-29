@@ -8,7 +8,7 @@ import pygame.draw as pgdraw
 import pygame.math as pgmath
 
 import colors
-from path import PointsPath
+from path import PointsPath, CatmullRomPath
 from utilities import vec2int
 
 
@@ -100,7 +100,8 @@ class Flight(object):
         points.append(runway.get_approach_point())
         points.append(runway.get_start_pos())
         points.append(runway.get_end_pos())
-        self.path = PointsPath(points)
+        # self.path = PointsPath(points)
+        self.path = CatmullRomPath(points)
         self.path_pos = 0.0
         self._status = Flight.STATUS_LANDING
     

@@ -123,25 +123,59 @@ class CatmullRomPath(Path):
         super().__init__(points)
         self._n_points = len(self.points)
         self.segment_lengths = None
-        self.length = self.get_length()
         self.n = n
+        self.length = self.get_length()
     
+    def get_point(self, segment, t):
+        pg_matrix = self._get_pg(segment)
+        t_vec = np.array([
+            [1.0],
+            [t],
+            [t ** 2],
+            [t ** 3]
+        ], ndmin=2)
+        point = pg_matrix.dot(t_vec)
+        return (point[0], point[1])
+    
+    def _get_pg(self, segment):
+        if self._n_points == 0:
+            return np.zeros((2, 4))
+        points = []
+        if segment == 0:
+            points.append(self.points[0])
+        else:
+            points.append(self.points[segment - 1])
+        points.append(self.points[segment])
+        for i in range(1, 3):
+            if segment + i >= self._n_points:
+                points.append(self.points[self._n_points - 1])
+            else:
+                points.append(self.points[segment + i])
+        p_matrix = np.array(points).T
+        return p_matrix.dot(self.CATMULL_ROM)
+
     def draw(self, screen):
         div = 1.0 / self.n
         for segment in range(0, self._n_points - 1):
             previous_point = vec2int(self.points[segment])
-            for t in np.linspace(div, 1, n):
+            for t in np.linspace(div, 1, self.n):
                 point = vec2int(self.get_point(segment, t))
                 pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
+                previous_point = point
     
     def draw_subpath(self, screen, distance):
-        segment_start, t = self.find_segment(distance):
+        segment_start, t_start = self.find_segment(distance)
         div = 1.0 / self.n
-        previous_point = self.get_point(segment_start, t)
-        for segment in range(segment_start, self._n_points - 1):
-            for t in np.linspace(div, 1, n):
+        previous_point = self.get_point(segment_start, t_start)
+        for t in np.linspace(t_start, 1, self.n):
+            point = vec2int(self.get_point(segment_start, t))
+            pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
+            previous_point = point
+        for segment in range(segment_start + 1, self._n_points - 1):
+            for t in np.linspace(div, 1, self.n):
                 point = vec2int(self.get_point(segment, t))
                 pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
+                previous_point = point
             previous_point = point
 
     def find_segment(self, distance):
@@ -153,7 +187,7 @@ class CatmullRomPath(Path):
                 return i, (distance - total_length) / segment
             else:
                 total_length += segment
-        return return self._n_points - 2, 1.0
+        return self._n_points - 2, 1.0
 
     def get_length(self):
         total_length = 0.0
@@ -167,7 +201,7 @@ class CatmullRomPath(Path):
                     np.diff(points_per_segment, axis=0), axis=1
                 )
             )
-            self.segment_lengths.append(segment_length)
+            self.segment_lengths[segment] = (segment_length)
             total_length += segment_length
         return total_length
     
