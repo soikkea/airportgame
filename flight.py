@@ -42,7 +42,7 @@ class Flight(object):
         self._status = Flight.STATUS_NORMAL
         self.logger = logging.getLogger(__name__)
 
-    def draw(self, screen):
+    def draw(self, screen, draw_subpath=True):
         pgdraw.circle(screen, (0, 0, 0), vec2int(self.get_pos()), 
                       self.ICON_SIZE, 0)
         dir_vect = pgmath.Vector2(0, 1).rotate(-self.direction) * Flight.ICON_SIZE * 2
@@ -51,7 +51,7 @@ class Flight(object):
         new_y = int(vect_point[1])
         pgdraw.line(screen, (0, 0, 0,), (self.x, self.y), (new_x, new_y))
 
-        if (self.path is not None and self.is_landing()):
+        if (self.path is not None and self.is_landing()) and draw_subpath:
             self.path.draw_subpath(screen, self.path_pos)
 
     def update(self, elapsed_time):

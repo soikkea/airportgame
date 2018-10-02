@@ -46,6 +46,8 @@ class Game(object):
 
         self.skip_name_input = skip_name_input
 
+        self._draw_subpaths = True
+
         self.logger = logging.getLogger(__name__)
 
         # Screen surface that has the size of 800 x 600
@@ -76,6 +78,8 @@ class Game(object):
                     if event.key == pygame.K_r:
                         if self.airfield is not None:
                             self.airfield.reset_airfield()
+                    elif event.key == pygame.K_s:
+                        self._draw_subpaths = not self._draw_subpaths
                 if self.player is not None:
                     # Only do this if game is properly initialized
                     if event.type == pygame.MOUSEBUTTONUP:
@@ -148,7 +152,7 @@ class Game(object):
         else:
             self.airfield.draw(screen)
             for flight in self.incoming_flights:
-                flight.draw(screen)
+                flight.draw(screen, draw_subpath=self._draw_subpaths)
             if self.selected_flight is not None:
                 self.selected_flight.draw_selection_box(screen)
             if self.selected_runway is not None:
