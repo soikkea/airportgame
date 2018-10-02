@@ -214,6 +214,56 @@ class CatmullRomPath(Path):
         return self.get_point(segment, t)
 
 
+class CatmullRomPathMemory(CatmullRomPath):
+
+    def __init__(self, points, n=85):
+        super().__init__(points, n)
+        self._path = np.zeros((n * (self._n_points - 1) , 2))
+        for segment in range(self._n_points - 1):
+            t = np.linspace(0, 1, num=self.n)
+            self._path[segment*n:(segment+1)*n, :] = (
+                self.get_points(segment, t)
+            )
+        self._path_cumulative_length = (
+            np.cumsum(
+                np.linalg.norm(
+                    np.diff(self._path, axis=0),
+                    axis=1
+                )
+            )
+        )
+    
+    def get_points(self, segment, t):
+        pg_matrix = self._get_pg(segment)
+        n_t = t.size
+        t_matrix = np.ones((4, n_t))
+        t_matrix[1, :] = t
+        t_matrix[2, :] = t ** 2
+        t_matrix[3, :] = t ** 3
+        path = pg_matrix.dot(t_matrix)
+        return path.T
+    
+    def draw(self, screen):
+        int_points = self._path.astype(int)
+        previous_point = int_points[0, :]
+        for i in range(1, int_points.shape[0]):
+            point = int_points[i, :]
+            pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
+            previous_point = point
+    
+    def draw_subpath(self, screen, distance):
+        segment_start, t_start = self.find_segment(distance)
+        previous_point = self.get_point(segment_start, t_start)
+        for j, cumsum in enumerate(self._path_cumulative_length):
+            if cumsum > distance:
+                break
+        int_points = self._path.astype(int)
+        for i in range(j, int_points.shape[0]):
+            point = int_points[i, :]
+            pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
+            previous_point = point
+
+
 class PathEnsemble(abc.ABC):
     def __init__(self, circular=False):
         self.paths = []
