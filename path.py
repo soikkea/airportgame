@@ -325,3 +325,31 @@ class RectanglePathEnsemble(PathEnsemble):
             self.paths.append(path)
 
         self.calculate_length()
+
+
+class EllipticalPathEnsemble(PathEnsemble):
+    def __init__(self, top_left, bottom_right, **kwargs):
+        super().__init__(kwargs)
+        self.left_x = top_left[0]
+        self.top_y = top_left[1]
+        self.right_x = bottom_right[0]
+        self.bottom_y = bottom_right[1]
+        self.width = self.right_x - self.left_x
+        self.height = self.bottom_y - self.top_y
+
+        self.top_middle = (self.left_x + self.width * 0.5, self.top_y)
+        self.right_middle = (self.right_x, self.top_y + self.height * 0.5)
+        self.bottom_middle = (self.left_x + self.width * 0.5, self.bottom_y)
+        self.left_middle = (self.left_x, self.top_y + self.height * 0.5)
+
+        p1 = [self.top_middle,
+              self.right_middle,
+              self.bottom_middle,
+              self.left_middle,
+              self.top_middle]
+
+        to_vec = [pygame.math.Vector2(x) for x in p1]
+        path = CatmullRomPathMemory(to_vec)
+        self.paths.append(path)
+
+        self.calculate_length()

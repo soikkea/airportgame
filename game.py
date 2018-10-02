@@ -12,7 +12,7 @@ from pgtext import PgText
 from player import Player
 from airfield import Airfield
 from flight import Flight
-from path import PointsPath, RectanglePathEnsemble
+from path import PointsPath, RectanglePathEnsemble, EllipticalPathEnsemble
 
 
 class Game(object):
@@ -265,7 +265,8 @@ class Game(object):
         for i in range(n):
             xy1 = top_left + i * d_top_left
             xy2 = bottom_right - i * d_bottom_right
-            self.paths.append(RectanglePathEnsemble(xy1, xy2, circular=True))
+            # self.paths.append(RectanglePathEnsemble(xy1, xy2, circular=True))
+            self.paths.append(EllipticalPathEnsemble(xy1, xy2, circular=True))
 
     def remove_landed_flights(self):
         for i in range(len(self.incoming_flights) -1, -1, -1):
