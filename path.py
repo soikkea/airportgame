@@ -250,6 +250,8 @@ class CatmullRomPathMemory(CatmullRomPath):
             point = int_points[i, :]
             pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
             previous_point = point
+        for point in self.points:
+            pygame.draw.circle(screen, colors.BLUE, vec2int(point), 5)
     
     def draw_subpath(self, screen, distance):
         segment_start, t_start = self.find_segment(distance)
@@ -337,19 +339,31 @@ class EllipticalPathEnsemble(PathEnsemble):
         self.width = self.right_x - self.left_x
         self.height = self.bottom_y - self.top_y
 
-        self.top_middle = (self.left_x + self.width * 0.5, self.top_y)
-        self.right_middle = (self.right_x, self.top_y + self.height * 0.5)
-        self.bottom_middle = (self.left_x + self.width * 0.5, self.bottom_y)
-        self.left_middle = (self.left_x, self.top_y + self.height * 0.5)
+        self.top_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.top_y)
+        self.right_middle = pygame.math.Vector2(self.right_x, self.top_y + self.height * 0.5)
+        self.bottom_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.bottom_y)
+        self.left_middle = pygame.math.Vector2(self.left_x, self.top_y + self.height * 0.5)
+
+        half_width = pygame.math.Vector2(self.width / 2, 0)
+        half_height = pygame.math.Vector2(0, self.height / 2)
+
+        corner = 0.55
 
         p1 = [self.top_middle,
+              self.top_middle + half_width * corner,
+              self.right_middle - half_height * corner,
               self.right_middle,
+              self.right_middle + half_height * corner,
+              self.bottom_middle + half_width * corner,
               self.bottom_middle,
+              self.bottom_middle - half_width * corner,
+              self.left_middle + half_height * corner,
               self.left_middle,
+              self.left_middle - half_height * corner,
+              self.top_middle - half_width * corner,
               self.top_middle]
 
-        to_vec = [pygame.math.Vector2(x) for x in p1]
-        path = CatmullRomPathMemory(to_vec)
+        path = CatmullRomPathMemory(p1)
         self.paths.append(path)
 
         self.calculate_length()
