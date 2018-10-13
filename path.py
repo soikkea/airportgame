@@ -339,28 +339,29 @@ class EllipticalPathEnsemble(PathEnsemble):
         self.width = self.right_x - self.left_x
         self.height = self.bottom_y - self.top_y
 
-        self.top_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.top_y)
-        self.right_middle = pygame.math.Vector2(self.right_x, self.top_y + self.height * 0.5)
-        self.bottom_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.bottom_y)
-        self.left_middle = pygame.math.Vector2(self.left_x, self.top_y + self.height * 0.5)
+        offset = 36
+
+        self.top_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.top_y - offset)
+        self.right_middle = pygame.math.Vector2(self.right_x + offset, self.top_y + self.height * 0.5)
+        self.bottom_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.bottom_y + offset)
+        self.left_middle = pygame.math.Vector2(self.left_x - offset, self.top_y + self.height * 0.5)
+        
+        self.left_top = pygame.math.Vector2(self.left_x, self.top_y)
+        self.right_top = pygame.math.Vector2(self.right_x, self.top_y)
+        self.right_bottom = pygame.math.Vector2(self.right_x, self.bottom_y)
+        self.left_bottom = pygame.math.Vector2(self.left_x, self.bottom_y)
 
         half_width = pygame.math.Vector2(self.width / 2, 0)
         half_height = pygame.math.Vector2(0, self.height / 2)
 
-        corner = 0.55
-
         p1 = [self.top_middle,
-              self.top_middle + half_width * corner,
-              self.right_middle - half_height * corner,
+              self.right_top,
               self.right_middle,
-              self.right_middle + half_height * corner,
-              self.bottom_middle + half_width * corner,
+              self.right_bottom,
               self.bottom_middle,
-              self.bottom_middle - half_width * corner,
-              self.left_middle + half_height * corner,
+              self.left_bottom,
               self.left_middle,
-              self.left_middle - half_height * corner,
-              self.top_middle - half_width * corner,
+              self.left_top,
               self.top_middle]
 
         path = CatmullRomPathMemory(p1)

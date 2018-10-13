@@ -21,7 +21,7 @@ class Game(object):
     '''
     WINDOW_WIDTH = 800
     WINDOW_HEIGHT = 600
-    BORDER_MARGIN = 15
+    BORDER_MARGIN = 60
 
     def __init__(self, skip_name_input=False):
         '''
