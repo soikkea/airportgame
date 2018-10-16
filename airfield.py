@@ -7,6 +7,7 @@ import math
 import pygame
 
 from runway import Runway
+from utilities import vec2tuple
 
 
 class Airfield(object):
@@ -19,7 +20,7 @@ class Airfield(object):
     MINIMUM_DISTANCE = 40
     TRANSPARENCY_COLORKEY = (1, 2, 3)
 
-    EDGE_BUFFER = 5
+    EDGE_BUFFER = 10
 
     def __init__(self, offset=(0, 0)):
         self.logger = logging.getLogger(__name__ + "." + type(self).__name__)
@@ -111,7 +112,7 @@ class Airfield(object):
                 end_point_found = (self.compare_points(end, i) and 
                                    self.point_inside_airfield(end))
 
-                if temp == 10000:
+                if temp == 1000:
                     # Just use this one if we actually end up here
                     self.logger.warn("Unoptimal runway end point for runway #{:d} !".format(i + 1))
                     end_point_found = True
@@ -168,6 +169,8 @@ class Airfield(object):
             if (self.distance_between(point, start) < self.MINIMUM_DISTANCE or
                 self.distance_between(point, end) < self.MINIMUM_DISTANCE):
                 return False
+            if self.dist_to_segment(start, end, point) < (self.MINIMUM_DISTANCE):
+                return False
         return True
     
 
@@ -207,3 +210,20 @@ class Airfield(object):
         x = random.randint(self.EDGE_BUFFER, self.FIELD_WIDTH - self.EDGE_BUFFER)
         y = random.randint(self.EDGE_BUFFER, self.FIELD_HEIGHT - self.EDGE_BUFFER)
         return x, y
+
+    def dist_to_segment(self, start, end, point):
+        # https://stackoverflow.com/a/1501725
+        segment_length = self.distance_between(start, end)
+        if segment_length == 0:
+            return distance_between(start, point)
+        try:
+            vec_a = point - start
+            vec_b = end - start
+        except TypeError:
+            start = pygame.math.Vector2(start)
+            vec_a = pygame.math.Vector2(point) - start
+            vec_b = pygame.math.Vector2(end) - start
+        projection = vec_a.dot(vec_b) / segment_length
+        t = max(0, min(1, projection))
+        projection_point = start + t * vec_b
+        return self.distance_between(point, vec2tuple(projection_point))
