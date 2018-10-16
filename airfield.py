@@ -19,6 +19,8 @@ class Airfield(object):
     MINIMUM_DISTANCE = 40
     TRANSPARENCY_COLORKEY = (1, 2, 3)
 
+    EDGE_BUFFER = 5
+
     def __init__(self, offset=(0, 0)):
         self.logger = logging.getLogger(__name__ + "." + type(self).__name__)
         
@@ -73,8 +75,7 @@ class Airfield(object):
             start_point_found = False
 
             while not start_point_found:
-                s_x = random.randint(0, self.FIELD_WIDTH)
-                s_y = random.randint(0, self.FIELD_HEIGHT)
+                s_x, s_y = self.get_random_point_inside_airfield()
 
                 start_point_found = self.compare_points((s_x, s_y), i)
             
@@ -107,7 +108,8 @@ class Airfield(object):
                 e_y = int(e_y)
 
                 end = (e_x, e_y)
-                end_point_found = self.compare_points(end, i)
+                end_point_found = (self.compare_points(end, i) and 
+                                   self.point_inside_airfield(end))
 
                 if temp == 10000:
                     # Just use this one if we actually end up here
@@ -121,6 +123,11 @@ class Airfield(object):
                 end = temp
             
             self.runways[i] = (start, end)
+
+            if not self.point_inside_airfield(start):
+                self.logger.warn("Runway %d start outside airfield!", i+1)
+            if not self.point_inside_airfield(end):
+                self.logger.warn("Runway %d end outside airfield!", i+1)
 
             new_runway = Runway(self.add_offset_to_tuple(start), self.add_offset_to_tuple(end), i+1, length)
             self.runway_list.append(new_runway)
@@ -187,3 +194,16 @@ class Airfield(object):
     def remove_offset_from_tuple(self, point):
         offset_x, offset_y = self.offset
         return (point[0] - offset_x, point[1] - offset_y)
+    
+    def point_inside_airfield(self, point, use_buffer=True):
+        buffer = self.EDGE_BUFFER if use_buffer else 0
+        is_inside = (
+            (buffer <= point[0] <= self.FIELD_WIDTH - buffer) and
+            (buffer <= point[1] <= self.FIELD_HEIGHT - buffer)
+        )
+        return is_inside
+    
+    def get_random_point_inside_airfield(self):
+        x = random.randint(self.EDGE_BUFFER, self.FIELD_WIDTH - self.EDGE_BUFFER)
+        y = random.randint(self.EDGE_BUFFER, self.FIELD_HEIGHT - self.EDGE_BUFFER)
+        return x, y
