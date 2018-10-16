@@ -110,7 +110,7 @@ class PointsPath(Path):
 
 
 class CatmullRomPath(Path):
-    CATMULL_ROM = 0.5 * np.array(
+    SPLINE_MATRIX = 0.5 * np.array(
         [
             [0., -1.,  2., -1.],
             [2.,  0., -5.,  3.],
@@ -152,7 +152,7 @@ class CatmullRomPath(Path):
             else:
                 points.append(self.points[segment + i])
         p_matrix = np.array(points).T
-        return p_matrix.dot(self.CATMULL_ROM)
+        return p_matrix.dot(self.SPLINE_MATRIX)
 
     def draw(self, screen):
         div = 1.0 / self.n
@@ -250,8 +250,8 @@ class CatmullRomPathMemory(CatmullRomPath):
             point = int_points[i, :]
             pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
             previous_point = point
-        for point in self.points:
-            pygame.draw.circle(screen, colors.BLUE, vec2int(point), 5)
+        # for point in self.points:
+        #     pygame.draw.circle(screen, colors.BLUE, vec2int(point), 5)
     
     def draw_subpath(self, screen, distance):
         segment_start, t_start = self.find_segment(distance)
@@ -264,6 +264,17 @@ class CatmullRomPathMemory(CatmullRomPath):
             point = int_points[i, :]
             pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
             previous_point = point
+
+
+class CubicBSplinePath(CatmullRomPathMemory):
+    SPLINE_MATRIX = (1.0 / 6.0) * np.array(
+        [
+            [1., -3.,  3., -1.],
+            [4.,  0., -6.,  3.],
+            [1.,  3.,  3., -3.],
+            [0.,  0.,  0.,  1.]
+        ]
+    )
 
 
 class PathEnsemble(abc.ABC):
@@ -355,6 +366,7 @@ class EllipticalPathEnsemble(PathEnsemble):
         half_height = pygame.math.Vector2(0, self.height / 2)
 
         p1 = [self.top_middle,
+              self.top_middle,
               self.right_top,
               self.right_middle,
               self.right_bottom,
@@ -362,9 +374,11 @@ class EllipticalPathEnsemble(PathEnsemble):
               self.left_bottom,
               self.left_middle,
               self.left_top,
+              self.top_middle,
               self.top_middle]
 
-        path = CatmullRomPathMemory(p1)
+        # path = CatmullRomPathMemory(p1)
+        path = CubicBSplinePath(p1)
         self.paths.append(path)
 
         self.calculate_length()
