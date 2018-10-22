@@ -48,7 +48,7 @@ class Runway(object):
         # TODO: Add Flight.INCOMING_DISTANCE to wait time
         self.cool_down_time = self.wait_time
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(type(self).__name__)
         # TODO: Finish
 
 
@@ -108,7 +108,10 @@ class Runway(object):
         screen.blit(runway_background, dest)
 
         # Draw the runway number
-        draw_text("Consolas", number_size, str(self.number), screen, self.get_unoffsetted_point_tuple(self.start_pos, vec2tuple(offset)), colors.BLACK)
+        try:
+            draw_text("Consolas", number_size, str(self.number), screen, self.get_unoffsetted_point_tuple(self.start_pos, vec2tuple(offset)), colors.BLACK)
+        except pygame.error:
+            self.logger.error("Could not draw text!")
     
     def get_full_length(self):
         assert(self.length in [1, 2, 3])

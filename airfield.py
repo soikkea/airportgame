@@ -223,7 +223,7 @@ class Airfield(object):
             start = pygame.math.Vector2(start)
             vec_a = pygame.math.Vector2(point) - start
             vec_b = pygame.math.Vector2(end) - start
-        projection = vec_a.dot(vec_b) / segment_length
+        projection = vec_a.dot(vec_b) / (segment_length ** 2)
         t = max(0, min(1, projection))
         projection_point = start + t * vec_b
         return self.distance_between(point, vec2tuple(projection_point))
