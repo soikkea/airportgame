@@ -20,7 +20,7 @@ class Airfield(object):
     MINIMUM_DISTANCE = 40
     TRANSPARENCY_COLORKEY = (1, 2, 3)
 
-    EDGE_BUFFER = 10
+    EDGE_BUFFER = 15
 
     def __init__(self, offset=(0, 0)):
         self.logger = logging.getLogger(__name__ + "." + type(self).__name__)
