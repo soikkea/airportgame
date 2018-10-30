@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import math
 import logging
 
 import pygame
@@ -9,7 +8,7 @@ import pygame
 import colors
 from pgtext import draw_text
 from utilities import vec2tuple
-import airfield
+
 
 class Runway(object):
     """

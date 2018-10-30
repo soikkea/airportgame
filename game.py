@@ -1,32 +1,34 @@
 # -*- coding: utf-8 -*-
+"""Implementation of the core game loop."""
+
 
 import random
-# import sys
+
 import logging
 
 import pygame
 
-from colors import *
+from colors import RED, GREEN
 from textinput import TextInput
 from pgtext import PgText
 from player import Player
 from airfield import Airfield
 from flight import Flight
-from path import PointsPath, RectanglePathEnsemble, EllipticalPathEnsemble
+from path import EllipticalPathEnsemble
 
 
 class Game(object):
-    '''
+    """
     The core of the game.
-    '''
+    """
     WINDOW_WIDTH = 800
     WINDOW_HEIGHT = 600
     BORDER_MARGIN = 60
 
     def __init__(self, skip_name_input=False):
-        '''
+        """
         Constructor
-        '''
+        """
         # Set up the font used by the game
         self.pgtext = PgText("Consolas", 25)
         self.clock = pygame.time.Clock()
@@ -51,7 +53,7 @@ class Game(object):
         self.logger = logging.getLogger(__name__)
 
         # Screen surface that has the size of 800 x 600
-        self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, 
+        self.screen = pygame.display.set_mode((self.WINDOW_WIDTH,
                                                self.WINDOW_HEIGHT))
         # Start game loop
         self.game_loop()
@@ -71,7 +73,7 @@ class Game(object):
             for event in events:
                 if event.type == pygame.QUIT:
                     running = False
-                if (event.type == pygame.KEYDOWN and 
+                if (event.type == pygame.KEYDOWN and
                     event.key == pygame.K_ESCAPE):
                     running = False
                 if (event.type == pygame.KEYDOWN):
@@ -93,7 +95,7 @@ class Game(object):
                         else:
                             if runway_under_mouse is not None:
                                 self.selected_runway = runway_under_mouse
-                                self.logger.debug("Runway %d selected" % self.selected_runway.number)
+                                self.logger.debug("Runway %d selected", self.selected_runway.number)
                                 self.selected_flight.generate_landing_path(self.selected_runway)
                             else:
                                 self.selected_runway = None
@@ -106,11 +108,11 @@ class Game(object):
             self.update(elapsed_time)
             self.draw(self.screen)
         return
-    
+
     def update(self, elapsed_time):
-        '''
+        """
         Update game logic.
-        '''
+        """
         # A new player must be created:
         if self.player is None:
             if not self.skip_name_input:
@@ -122,7 +124,7 @@ class Game(object):
                         self.player = Player(self.textinput.get_value())
                     else:
                         self.player = Player("I am too important to input a name.")
-                    self.textinput.deactivate
+                    self.textinput.deactivate()
                     # TODO: Choose difficulty
             else:
                 self.player = Player("Debug Mode On")
@@ -139,10 +141,10 @@ class Game(object):
                     flight.set_path(self.paths[path_num])
 
                 flight.update(elapsed_time)
-            
+
             self.remove_landed_flights()
         return True
-    
+
     def draw(self, screen):
         screen.fill(GREEN)
         self.pgtext.display_text("AirPortGame", screen)
@@ -159,39 +161,38 @@ class Game(object):
                 self.selected_runway.draw_selection_circle(screen)
             if ((self.selected_flight is not None) and
                 (self.selected_runway is not None)):
-                self.selected_flight.draw_path(screen) 
+                self.selected_flight.draw_path(screen)
             # TODO: DEBUGGING
             for path in self.paths:
                 path.draw(screen)
         self.show_fps(screen)
         pygame.display.flip()
-    
+
     def show_fps(self, screen):
-        '''
+        """
         Displays the current FPS on screen
-        '''
+        """
         fps = self.clock.get_fps()
         self.pgtext.display_text("FPS: {0:.2f}".format(fps), screen, 600, 10)
-        pass
-    
+
     def center_airfield(self):
         x = self.WINDOW_WIDTH / 2 - (Airfield.FIELD_WIDTH / 2)
         y = self.WINDOW_HEIGHT / 2 - (Airfield.FIELD_HEIGHT
             / 2)
         return (x, y)
-    
+
     def create_flight(self, elapsed_time):
         time_limit = 180 * 1000
 
         self.time_since_last_flight_created += elapsed_time
-        
-        creation_rate = (self.time_since_last_flight_created 
-            / time_limit) 
-        
+
+        creation_rate = (self.time_since_last_flight_created
+            / time_limit)
+
         # Limit creation of new planes when there are too many
         if len(self.incoming_flights) > 9:
             creation_rate = 0.0005
-        
+
         chance = random.random()
         if chance < creation_rate:
             self.time_since_last_flight_created = 0
@@ -202,7 +203,7 @@ class Game(object):
             y = random.randint(0, self.WINDOW_HEIGHT - 1)
             new_flight = Flight(name, None, x=x, y=y)
             self.incoming_flights.append(new_flight)
-    
+
     def find_closest_flight_in_range(self, x, y, max_range=10):
         """
         Return the flight closest to (x, y) within max_range.
@@ -216,8 +217,8 @@ class Game(object):
                 closest_distance = distance
                 closest_flight = flight
         return closest_flight
-    
-    def find_closest_runway_in_range(self, x, y, 
+
+    def find_closest_runway_in_range(self, x, y,
                                      max_range=Airfield.MINIMUM_DISTANCE):
         """
         Returns the closest runway within max_range.
@@ -232,7 +233,7 @@ class Game(object):
                 closest_runway = runway
         # DEBUG
         if closest_runway is not None:
-            self.logger.debug("Clicked at: %s, runway #%d at: %s" % (point, closest_runway.get_number(), (closest_runway.get_start_pos())))
+            self.logger.debug("Clicked at: %s, runway #%d at: %s", point, closest_runway.get_number(), (closest_runway.get_start_pos()))
         return closest_runway
 
     def create_circling_flight_paths(self, n=3):
@@ -240,14 +241,14 @@ class Game(object):
         airfield_offset = self.airfield.get_offset()
         left_x2 = airfield_offset[0] - Game.BORDER_MARGIN
         assert left_x1 < left_x2
-        right_x1 = (airfield_offset[0] + self.airfield.FIELD_WIDTH 
+        right_x1 = (airfield_offset[0] + self.airfield.FIELD_WIDTH
                                        + Game.BORDER_MARGIN)
         right_x2 = Game.WINDOW_WIDTH - Game.BORDER_MARGIN
         assert right_x1 < right_x2
         top_y1 = Game.BORDER_MARGIN
         top_y2 = airfield_offset[1] - Game.BORDER_MARGIN
         assert top_y1 < top_y2
-        bottom_y1 = (airfield_offset[1] + self.airfield.FIELD_HEIGHT 
+        bottom_y1 = (airfield_offset[1] + self.airfield.FIELD_HEIGHT
                                         + Game.BORDER_MARGIN)
         bottom_y2 = Game.WINDOW_HEIGHT - Game.BORDER_MARGIN
         assert bottom_y1 < bottom_y2

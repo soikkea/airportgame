@@ -4,7 +4,7 @@ class Plane(object):
     """
     Base class for different plane types.
     """
-    def __init__(self, size, max_fuel, max_passengers)
+    def __init__(self, size, max_fuel, max_passengers):
         """
         Constructor
         size = 1...3

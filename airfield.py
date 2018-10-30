@@ -54,8 +54,7 @@ class Airfield(object):
                                            self.max_runways)
 
         # Initialize the list of runways
-        # TODO: Why is this self.?
-        self.runways = [0] * number_of_runways
+        runways = [0] * number_of_runways
 
         length = 0
         for i in range(number_of_runways):
@@ -124,7 +123,7 @@ class Airfield(object):
                 start = end
                 end = temp
 
-            self.runways[i] = (start, end)
+            runways[i] = (start, end)
 
             if not self.point_inside_airfield(start):
                 self.logger.warning("Runway %d start outside airfield!", i+1)

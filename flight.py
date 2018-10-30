@@ -2,13 +2,12 @@
 
 import logging
 import random
-import math
 
 import pygame.draw as pgdraw
 import pygame.math as pgmath
 
 import colors
-from path import PointsPath, CatmullRomPath, CatmullRomPathMemory
+from path import CatmullRomPathMemory
 from utilities import vec2int
 
 

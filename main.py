@@ -8,7 +8,7 @@ import pygame
 from game import Game
 
 
-# TODO: Turn this off when game ready
+# TODO: Turn this off when game ready, turn it into command line argument
 SKIP_NAME_INPUT = True
 
 
