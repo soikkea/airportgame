@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""Main function, initializes pygame and starts the game."""
+
 import logging
 
 import pygame
@@ -10,8 +12,8 @@ from game import Game
 SKIP_NAME_INPUT = True
 
 
-# The main function
 def main():
+    """The main function."""
     # Initialize logging
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger(__name__)
@@ -23,11 +25,11 @@ def main():
 
     # Initialize game
     logger.debug("Initializing game")
-    game = Game(skip_name_input=SKIP_NAME_INPUT)
-    
+    Game(skip_name_input=SKIP_NAME_INPUT)
+
     logger.debug("Quiting the game")
     pygame.quit()
-    
-    
+
+
 if __name__ == "__main__":
     main()
