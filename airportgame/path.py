@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+"""Implementation of different Paths."""
+
 import logging
 import abc
 
@@ -20,15 +22,15 @@ class Path(abc.ABC):
     @abc.abstractmethod
     def draw(self, screen):
         raise NotImplementedError()
-    
+
     @abc.abstractmethod
     def draw_subpath(self, screen, distance):
         raise NotImplementedError()
-    
+
     @abc.abstractmethod
     def get_length(self):
         raise NotImplementedError()
-        
+
     @abc.abstractmethod
     def get_point_along_path(self):
         raise NotImplementedError()
@@ -42,7 +44,7 @@ class PointsPath(Path):
     def __init__(self, points):
         super().__init__(points)
         self.length = self.get_length()
-        assert(self.length is not None)
+        assert self.length is not None
 
     def draw(self, screen):
         previous_point = self.points[0]
@@ -125,7 +127,7 @@ class CatmullRomPath(Path):
         self.segment_lengths = None
         self.n = n
         self.length = self.get_length()
-    
+
     def get_point(self, segment, t):
         pg_matrix = self._get_pg(segment)
         t_vec = np.array([
@@ -136,7 +138,7 @@ class CatmullRomPath(Path):
         ], ndmin=2)
         point = pg_matrix.dot(t_vec)
         return (point[0], point[1])
-    
+
     def _get_pg(self, segment):
         if self._n_points == 0:
             return np.zeros((2, 4))
@@ -162,7 +164,7 @@ class CatmullRomPath(Path):
                 point = vec2int(self.get_point(segment, t))
                 pygame.draw.line(screen, colors.BLUE, previous_point, point, 2)
                 previous_point = point
-    
+
     def draw_subpath(self, screen, distance):
         segment_start, t_start = self.find_segment(distance)
         div = 1.0 / self.n
@@ -204,7 +206,7 @@ class CatmullRomPath(Path):
             self.segment_lengths[segment] = (segment_length)
             total_length += segment_length
         return total_length
-    
+
     def get_point_along_path(self, distance):
         try:
             distance = distance % self.length
@@ -232,7 +234,7 @@ class CatmullRomPathMemory(CatmullRomPath):
                 )
             )
         )
-    
+
     def get_points(self, segment, t):
         pg_matrix = self._get_pg(segment)
         n_t = t.size
@@ -242,7 +244,7 @@ class CatmullRomPathMemory(CatmullRomPath):
         t_matrix[3, :] = t ** 3
         path = pg_matrix.dot(t_matrix)
         return path.T
-    
+
     def draw(self, screen):
         int_points = self._path.astype(int)
         previous_point = int_points[0, :]
@@ -252,7 +254,7 @@ class CatmullRomPathMemory(CatmullRomPath):
             previous_point = point
         # for point in self.points:
         #     pygame.draw.circle(screen, colors.BLUE, vec2int(point), 5)
-    
+
     def draw_subpath(self, screen, distance):
         segment_start, t_start = self.find_segment(distance)
         previous_point = self.get_point(segment_start, t_start)
@@ -306,7 +308,7 @@ class PathEnsemble(abc.ABC):
                 return path.get_point_along_path(distance - length)
             else:
                 length += path.length
-        
+
         # distance > self.length
         return path.get_point_along_path(distance - (length - path.length))
 
@@ -352,18 +354,19 @@ class EllipticalPathEnsemble(PathEnsemble):
 
         offset = 36
 
-        self.top_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.top_y - offset)
-        self.right_middle = pygame.math.Vector2(self.right_x + offset, self.top_y + self.height * 0.5)
-        self.bottom_middle = pygame.math.Vector2(self.left_x + self.width * 0.5, self.bottom_y + offset)
-        self.left_middle = pygame.math.Vector2(self.left_x - offset, self.top_y + self.height * 0.5)
-        
+        self.top_middle = pygame.math.Vector2(
+            self.left_x + self.width * 0.5, self.top_y - offset)
+        self.right_middle = pygame.math.Vector2(
+            self.right_x + offset, self.top_y + self.height * 0.5)
+        self.bottom_middle = pygame.math.Vector2(
+            self.left_x + self.width * 0.5, self.bottom_y + offset)
+        self.left_middle = pygame.math.Vector2(
+            self.left_x - offset, self.top_y + self.height * 0.5)
+
         self.left_top = pygame.math.Vector2(self.left_x, self.top_y)
         self.right_top = pygame.math.Vector2(self.right_x, self.top_y)
         self.right_bottom = pygame.math.Vector2(self.right_x, self.bottom_y)
         self.left_bottom = pygame.math.Vector2(self.left_x, self.bottom_y)
-
-        half_width = pygame.math.Vector2(self.width / 2, 0)
-        half_height = pygame.math.Vector2(0, self.height / 2)
 
         p1 = [self.top_middle,
               self.top_middle,
