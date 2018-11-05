@@ -12,7 +12,14 @@ import airportgame.colors as colors
 from airportgame.utilities import vec2int
 
 
-class Path(abc.ABC):
+class BasePath(abc.ABC):
+    """Abstract base class for different types of paths.
+    
+    Arguments:
+        abc {list[tuple]} -- A list of tuples containing the x and y
+            coordinates of the points in the path.
+
+    """
 
     def __init__(self, points):
         self.points = points
@@ -39,7 +46,7 @@ class Path(abc.ABC):
         return self.length <= distance
 
 
-class PointsPath(Path):
+class PointsPath(BasePath):
 
     def __init__(self, points):
         super().__init__(points)
@@ -111,7 +118,7 @@ class PointsPath(Path):
         return self.points[-1]
 
 
-class CatmullRomPath(Path):
+class CatmullRomPath(BasePath):
     SPLINE_MATRIX = 0.5 * np.array(
         [
             [0., -1.,  2., -1.],
