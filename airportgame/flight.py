@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
+"""Implementation of the Flight class."""
+
 import logging
 import random
 
 import pygame.draw as pgdraw
 import pygame.math as pgmath
 
-import colors
-from path import CatmullRomPathMemory
-from utilities import vec2int
+import airportgame.colors as colors
+from airportgame.path import CatmullRomPathMemory
+from airportgame.utilities import vec2int
 
 
 class Flight(object):

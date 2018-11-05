@@ -6,8 +6,8 @@ import abc
 import numpy as np
 import pygame
 
-import colors
-from utilities import vec2int
+import airportgame.colors as colors
+from airportgame.utilities import vec2int
 
 
 class Path(abc.ABC):

@@ -2,7 +2,7 @@
 
 from pygame.locals import *
 
-from colors import BLACK
+from airportgame.colors import BLACK
 
 class TextInput(object):
     """

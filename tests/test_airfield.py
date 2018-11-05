@@ -2,7 +2,7 @@
 
 import unittest
 
-from airfield import Airfield
+from airportgame.airfield import Airfield
 
 
 class TestAirfield(unittest.TestCase):

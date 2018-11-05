@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from colors import *
+from airportgame.colors import *
 
 class PgText(object):
     """

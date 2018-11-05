@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Implementation of the Airfield class."""
 
 import logging
 import random
@@ -6,8 +7,8 @@ import math
 
 import pygame
 
-from runway import Runway
-from utilities import vec2tuple
+from airportgame.runway import Runway
+from airportgame.utilities import vec2tuple
 
 
 class Airfield(object):

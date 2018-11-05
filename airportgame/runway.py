@@ -5,9 +5,9 @@ import logging
 import pygame
 # TODO:
 # from flight import Flight
-import colors
-from pgtext import draw_text
-from utilities import vec2tuple
+import airportgame.colors as colors
+from airportgame.pgtext import draw_text
+from airportgame.utilities import vec2tuple
 
 
 class Runway(object):

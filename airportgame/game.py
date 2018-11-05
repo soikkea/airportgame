@@ -8,13 +8,13 @@ import logging
 
 import pygame
 
-from colors import RED, GREEN
-from textinput import TextInput
-from pgtext import PgText
-from player import Player
-from airfield import Airfield
-from flight import Flight
-from path import EllipticalPathEnsemble
+from airportgame.colors import RED, GREEN
+from airportgame.textinput import TextInput
+from airportgame.pgtext import PgText
+from airportgame.player import Player
+from airportgame.airfield import Airfield
+from airportgame.flight import Flight
+from airportgame.path import EllipticalPathEnsemble
 
 
 class Game(object):

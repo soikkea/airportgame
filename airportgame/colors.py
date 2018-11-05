@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file contains pre-defined colors
+This file contains pre-defined colors.
 """
 
 WHITE = (255, 255, 255)
