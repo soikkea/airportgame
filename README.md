@@ -15,7 +15,7 @@ python >= 3.6.5
 
 ## How to play
 
-Start game with:
+Start the game with:
 
 ```
 python main.py
