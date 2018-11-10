@@ -14,7 +14,7 @@ from airportgame.utilities import vec2int
 
 class BasePath(abc.ABC):
     """Abstract base class for different types of paths.
-    
+
     Arguments:
         abc {list[tuple]} -- A list of tuples containing the x and y
             coordinates of the points in the path.
@@ -28,21 +28,61 @@ class BasePath(abc.ABC):
 
     @abc.abstractmethod
     def draw(self, screen):
+        """Draw the path.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+
+        Raises:
+            NotImplementedError -- This is an abstract method.
+        """
+
         raise NotImplementedError()
 
     @abc.abstractmethod
     def draw_subpath(self, screen, distance):
+        """Draw the path starting from 'distance'.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+            distance {float} -- Starting distance for the subpath.
+
+        Raises:
+            NotImplementedError -- This is an abstract method.
+        """
+
         raise NotImplementedError()
 
     @abc.abstractmethod
     def get_length(self):
+        """Get the length of the path.
+
+        Raises:
+            NotImplementedError -- This is an abstract method.
+        """
+
         raise NotImplementedError()
 
     @abc.abstractmethod
     def get_point_along_path(self):
+        """Get the coordinates of a point on the path.
+
+        Raises:
+            NotImplementedError -- This is an abstract method.
+        """
+
         raise NotImplementedError()
 
     def is_over(self, distance):
+        """Returns True if the distance is longer than the path.
+
+        Arguments:
+            distance {float} -- distance
+
+        Returns:
+            bool -- Whether distance is longer than the path.
+        """
+
         return self.length <= distance
 
 
@@ -265,6 +305,7 @@ class CatmullRomPathMemory(CatmullRomPath):
     def draw_subpath(self, screen, distance):
         segment_start, t_start = self.find_segment(distance)
         previous_point = self.get_point(segment_start, t_start)
+        j = 0
         for j, cumsum in enumerate(self._path_cumulative_length):
             if cumsum > distance:
                 break

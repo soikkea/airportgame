@@ -44,7 +44,17 @@ class Flight(object):
         self.logger = logging.getLogger(__name__)
 
     def draw(self, screen, draw_subpath=True):
-        pgdraw.circle(screen, (0, 0, 0), vec2int(self.get_pos()), 
+        """Draw the flight (and optinally its path).
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+
+        Keyword Arguments:
+            draw_subpath {bool} -- Whether to draw the path of the flight.
+                (default: {True})
+        """
+
+        pgdraw.circle(screen, (0, 0, 0), vec2int(self.get_pos()),
                       self.ICON_SIZE, 0)
         dir_vect = pgmath.Vector2(0, 1).rotate(-self.direction) * Flight.ICON_SIZE * 2
         vect_point = dir_vect + self.get_pos()
@@ -67,19 +77,19 @@ class Flight(object):
                 if self.path.is_over(self.path_pos):
                     self._status = Flight.STATUS_LANDED
                     self.logger.debug("FLIGHT HAS LANDED")
-    
+
     def rotate_to_vector(self, vec):
         if vec.length() > 0.0:
             self.direction = -pgmath.Vector2(0, 1).angle_to(vec)
-            
+
     def update_pos(self, vector_pos):
         self.x = vector_pos[0]
         self.y = vector_pos[1]
 
     def draw_selection_box(self, screen):
-        pgdraw.rect(screen, colors.BLUE, 
-                    [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE, 
-                    Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2], 
+        pgdraw.rect(screen, colors.BLUE,
+                    [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE,
+                    Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2],
                     Flight.SELECTION_BOX_WIDTH)
 
     def draw_path(self, screen):
@@ -88,15 +98,15 @@ class Flight(object):
 
     def get_pos(self):
         return pgmath.Vector2(self.x, self.y)
-    
+
     def get_direction_vector(self):
         return pgmath.Vector2(0, 1).rotate(-self.direction)
-    
+
     def generate_landing_path(self, runway):
         points = []
         my_pos = self.get_pos()
         points.append(my_pos)
-        points.append(my_pos + self.get_direction_vector() 
+        points.append(my_pos + self.get_direction_vector()
                       * runway.get_full_length() * 0.5)
         points.append(runway.get_approach_point())
         points.append(runway.get_start_pos())
@@ -106,14 +116,14 @@ class Flight(object):
         self.path = CatmullRomPathMemory(points)
         self.path_pos = 0.0
         self._status = Flight.STATUS_LANDING
-    
+
     def is_landing(self):
         return self._status == Flight.STATUS_LANDING
-    
+
     def set_path(self, path):
         """Set path that is not a landing path."""
         self.path = path
         self.path_pos = 0.0
-    
+
     def get_status(self):
         return self._status

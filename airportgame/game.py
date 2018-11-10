@@ -74,9 +74,9 @@ class Game(object):
                 if event.type == pygame.QUIT:
                     running = False
                 if (event.type == pygame.KEYDOWN and
-                    event.key == pygame.K_ESCAPE):
+                        event.key == pygame.K_ESCAPE):
                     running = False
-                if (event.type == pygame.KEYDOWN):
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
                         if self.airfield is not None:
                             self.airfield.reset_airfield()
@@ -120,7 +120,7 @@ class Game(object):
                     self.textinput.activate()
                     self.textinput.set_pos(100, 150)
                 if self.textinput.was_return_pressed():
-                    if len(self.textinput.get_value()) > 0:
+                    if self.textinput.get_value():
                         self.player = Player(self.textinput.get_value())
                     else:
                         self.player = Player("I am too important to input a name.")
@@ -146,6 +146,12 @@ class Game(object):
         return True
 
     def draw(self, screen):
+        """Draw the game.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
+
         screen.fill(GREEN)
         self.pgtext.display_text("AirPortGame", screen)
         if self.player is None:
@@ -160,7 +166,7 @@ class Game(object):
             if self.selected_runway is not None:
                 self.selected_runway.draw_selection_circle(screen)
             if ((self.selected_flight is not None) and
-                (self.selected_runway is not None)):
+                    (self.selected_runway is not None)):
                 self.selected_flight.draw_path(screen)
             # TODO: DEBUGGING
             for path in self.paths:
@@ -176,9 +182,14 @@ class Game(object):
         self.pgtext.display_text("FPS: {0:.2f}".format(fps), screen, 600, 10)
 
     def center_airfield(self):
+        """Get the offset coordinates for the Airfield so that it is centered.
+
+        Returns:
+            tuple -- x and y offset coordinates.
+        """
+
         x = self.WINDOW_WIDTH / 2 - (Airfield.FIELD_WIDTH / 2)
-        y = self.WINDOW_HEIGHT / 2 - (Airfield.FIELD_HEIGHT
-            / 2)
+        y = self.WINDOW_HEIGHT / 2 - (Airfield.FIELD_HEIGHT / 2)
         return (x, y)
 
     def create_flight(self, elapsed_time):

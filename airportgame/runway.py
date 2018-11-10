@@ -54,12 +54,31 @@ class Runway(object):
 
 
     def get_start_and_end_pos(self):
+        """Get the start and end positions of the runway.
+
+        Returns:
+            tuple -- start and end points.
+        """
+
         return (self.start_pos, self.end_pos)
 
     def get_number(self):
+        """Get the number of the runway.
+
+        Returns:
+            int -- Number of the runway.
+        """
+
         return self.number
 
     def draw(self, screen, offset):
+        """Draws the runway.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+            offset {Vector} -- Offset of the Airfield.
+        """
+
         runway_background = pygame.Surface(
             (self.RUNWAY_WIDTH, self.get_full_length()), pygame.SRCALPHA)
         runway_background.fill(self.RUNWAY_COLOR)
@@ -77,7 +96,15 @@ class Runway(object):
 
 
     def paint(self, screen, offset):
-        runway_background = pygame.Surface((self.RUNWAY_WIDTH, self.get_full_length()), pygame.SRCALPHA)
+        """Paints the middle line and the number of the runway.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+            offset {Vector} -- Offset of the Airfield.
+        """
+
+        runway_background = pygame.Surface(
+            (self.RUNWAY_WIDTH, self.get_full_length()), pygame.SRCALPHA)
 
         edge_offset = 5
         line_length = 5
