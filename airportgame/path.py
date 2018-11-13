@@ -64,8 +64,11 @@ class BasePath(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_point_along_path(self):
+    def get_point_along_path(self, distance):
         """Get the coordinates of a point on the path.
+
+        Arguments:
+            distance {float} -- The distance along the path.
 
         Raises:
             NotImplementedError -- This is an abstract method.
@@ -87,6 +90,12 @@ class BasePath(abc.ABC):
 
 
 class PointsPath(BasePath):
+    """Path consisting of linearly connected points.
+
+    Arguments:
+        abc {list[tuple]} -- A list of tuples containing the x and y
+            coordinates of the points in the path.
+    """
 
     def __init__(self, points):
         super().__init__(points)
@@ -94,6 +103,11 @@ class PointsPath(BasePath):
         assert self.length is not None
 
     def draw(self, screen):
+        """Draw the path.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
         previous_point = self.points[0]
         for point in self.points[1:]:
             pygame.draw.line(screen, colors.BLUE, vec2int(
@@ -101,6 +115,12 @@ class PointsPath(BasePath):
             previous_point = point
 
     def draw_subpath(self, screen, distance):
+        """Draw the path starting from 'distance'.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+            distance {float} -- Starting distance for the subpath.
+        """
         subpath = self.get_subpath(distance)
         previous_point = subpath[0]
         for point in subpath[1:]:
@@ -109,6 +129,11 @@ class PointsPath(BasePath):
             previous_point = point
 
     def get_length(self):
+        """Get the length of the path.
+
+        Returns:
+            float -- The length of the path.
+        """
         length = 0.0
         previous_point = self.points[0]
         for point in self.points[1:]:
@@ -117,6 +142,15 @@ class PointsPath(BasePath):
         return length
 
     def get_subpath(self, distance):
+        """Get the points on a sub-path starting from distance.
+
+        Arguments:
+            distance {float} -- Starting distance for the sub-path.
+
+        Returns:
+            list -- List of points.
+        """
+
         if distance > self.length:
             return self.points[-1:]
         if distance < 0.0:
@@ -138,6 +172,14 @@ class PointsPath(BasePath):
         return self.points[-1:]
 
     def get_point_along_path(self, distance):
+        """Get the coordinates of a point on the path.
+
+        Arguments:
+            distance {float} -- The distance along the path.
+
+        Returns:
+            Vector2 -- Vector with the coordinates of the requested point.
+        """
         if distance > self.length:
             return self.points[-1]
         if distance < 0.0:
@@ -159,6 +201,14 @@ class PointsPath(BasePath):
 
 
 class CatmullRomPath(BasePath):
+    """Path consisting of Catmull-Rom splines.
+
+    Arguments:
+        abc {list[tuple]} -- A list of tuples containing the x and y
+            coordinates of the points in the path.
+        n {int} -- Number of sub-points used for drawing and calculating the
+            length of the path.
+    """
     SPLINE_MATRIX = 0.5 * np.array(
         [
             [0., -1.,  2., -1.],
@@ -176,6 +226,17 @@ class CatmullRomPath(BasePath):
         self.length = self.get_length()
 
     def get_point(self, segment, t):
+        """Calculate the coordinates of the point in the given segment.
+
+        Arguments:
+            segment {int} -- Index of segment in the path.
+            t {float} -- Number between 0 and 1, specifying the point inside
+                the segment.
+
+        Returns:
+            tuple -- Coordinates of the point.
+        """
+
         pg_matrix = self._get_pg(segment)
         t_vec = np.array([
             [1.0],
@@ -187,6 +248,16 @@ class CatmullRomPath(BasePath):
         return (point[0], point[1])
 
     def _get_pg(self, segment):
+        """Return the 'pg' matrix for the segment. Here p = the control points
+        for the segment and g = self.SPLINE_MATRIX.
+
+        Arguments:
+            segment {int} -- Index of the segment in the path.
+
+        Returns:
+            ndarray -- pg matrix.
+        """
+
         if self._n_points == 0:
             return np.zeros((2, 4))
         points = []
@@ -204,6 +275,11 @@ class CatmullRomPath(BasePath):
         return p_matrix.dot(self.SPLINE_MATRIX)
 
     def draw(self, screen):
+        """Draw the path.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
         div = 1.0 / self.n
         for segment in range(0, self._n_points - 1):
             previous_point = vec2int(self.points[segment])
@@ -213,6 +289,12 @@ class CatmullRomPath(BasePath):
                 previous_point = point
 
     def draw_subpath(self, screen, distance):
+        """Draw the path starting from 'distance'.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+            distance {float} -- Starting distance for the subpath.
+        """
         segment_start, t_start = self.find_segment(distance)
         div = 1.0 / self.n
         previous_point = self.get_point(segment_start, t_start)
@@ -228,6 +310,16 @@ class CatmullRomPath(BasePath):
             previous_point = point
 
     def find_segment(self, distance):
+        """Find the index of the segment given distance along the path.
+
+        Arguments:
+            distance {float} -- Distance along the
+
+        Returns:
+            int -- Index of the segment.
+            float -- The unit distance within that segment.
+        """
+
         if distance > self.length:
             return self._n_points - 2, 1.0
         total_length = 0.0
@@ -239,6 +331,11 @@ class CatmullRomPath(BasePath):
         return self._n_points - 2, 1.0
 
     def get_length(self):
+        """Get the length of the path.
+
+        Returns:
+            float -- The length of the path.
+        """
         total_length = 0.0
         points_per_segment = np.zeros((self.n, 2))
         self.segment_lengths = [0] * (self._n_points - 1)
@@ -255,6 +352,14 @@ class CatmullRomPath(BasePath):
         return total_length
 
     def get_point_along_path(self, distance):
+        """Get the coordinates of a point on the path.
+
+        Arguments:
+            distance {float} -- The distance along the path.
+
+        Returns:
+            Vector2 -- Vector with the coordinates of the requested point.
+        """
         try:
             distance = distance % self.length
         except ZeroDivisionError:

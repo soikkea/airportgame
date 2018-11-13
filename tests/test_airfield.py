@@ -1,4 +1,4 @@
-"""Tests for airfield module."""
+"""Tests for airfield class."""
 
 import unittest
 

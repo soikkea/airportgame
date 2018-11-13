@@ -147,6 +147,12 @@ class Runway(object):
             self.logger.error("Could not draw text!")
 
     def get_full_length(self):
+        """Get the full length of the runway.
+
+        Returns:
+            int -- Length of the runway.
+        """
+
         assert(self.length in [1, 2, 3])
         if self.length == 1:
             return Runway.RUNWAY_LENGTH_SHORT
@@ -160,8 +166,17 @@ class Runway(object):
 
 
     def get_angle(self):
+        """Get the angle of the runway. Returns the angle in degrees, with
+        angle 0 pointing in the positive y direction and angle 90 pointing in
+        the positive x direction.
+
+        Returns:
+            float -- angle of the runway.
+        """
+
         unrotated = pygame.math.Vector2(0, self.get_full_length())
-        rotated = pygame.math.Vector2(self.end_pos[0] - self.start_pos[0], self.end_pos[1] - self.start_pos[1])
+        rotated = pygame.math.Vector2(self.end_pos[0] - self.start_pos[0],
+                                      self.end_pos[1] - self.start_pos[1])
         return rotated.angle_to(unrotated)
 
 
