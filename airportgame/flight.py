@@ -13,7 +13,7 @@ from airportgame.path import CatmullRomPathMemory
 from airportgame.utilities import vec2int
 
 
-class Flight(object):
+class Flight():
     """
     A class representing a single flight
     """
@@ -66,6 +66,12 @@ class Flight(object):
             self.path.draw_subpath(screen, self.path_pos)
 
     def update(self, elapsed_time):
+        """Update the flight.
+
+        Arguments:
+            elapsed_time {float} -- Time elapsed since last call.
+        """
+
         if self.path is not None:
             distance_travelled = elapsed_time * self.SPEED
             self.path_pos += distance_travelled
@@ -79,6 +85,12 @@ class Flight(object):
                     self.logger.debug("FLIGHT HAS LANDED")
 
     def rotate_to_vector(self, vec):
+        """Rotates the flight so it points in the same direction as vec.
+
+        Arguments:
+            vec {Vector2} -- Vector to align the flight with.
+        """
+
         if vec.length() > 0.0:
             self.direction = -pgmath.Vector2(0, 1).angle_to(vec)
 
