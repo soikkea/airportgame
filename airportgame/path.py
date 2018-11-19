@@ -159,14 +159,14 @@ class PointsPath(BasePath):
         previous_point = self.points[0]
         for i, point in enumerate(self.points[1:]):
             current_length = previous_point.distance_to(point)
-            if length <= distance and distance <= length + current_length:
+            if length <= distance <= length + current_length:
                 # Point in this part
                 relative_distance = distance - length
                 dir_vector = (point - previous_point).normalize()
 
                 return [previous_point + dir_vector * relative_distance] + self.points[i + 1:]
-            else:
-                length += current_length
+
+            length += current_length
             previous_point = point
         self.logger.warning("This should never happen!")
         return self.points[-1:]
@@ -188,13 +188,13 @@ class PointsPath(BasePath):
         previous_point = self.points[0]
         for point in self.points[1:]:
             current_length = previous_point.distance_to(point)
-            if length <= distance and distance <= length + current_length:
+            if length <= distance <= length + current_length:
                 # Point in this part
                 relative_distance = distance - length
                 dir_vector = (point - previous_point).normalize()
                 return previous_point + dir_vector * relative_distance
-            else:
-                length += current_length
+
+            length += current_length
             previous_point = point
         self.logger.warning("This should never happen!")
         return self.points[-1]
@@ -326,8 +326,8 @@ class CatmullRomPath(BasePath):
         for i, segment in enumerate(self.segment_lengths):
             if total_length <= distance < total_length + segment:
                 return i, (distance - total_length) / segment
-            else:
-                total_length += segment
+
+            total_length += segment
         return self._n_points - 2, 1.0
 
     def get_length(self):
@@ -369,6 +369,15 @@ class CatmullRomPath(BasePath):
 
 
 class CatmullRomPathMemory(CatmullRomPath):
+    """Path consisting of Catmull-Rom splines.
+    This version has been optimized by pre-calculating the paths.
+
+    Arguments:
+        abc {list[tuple]} -- A list of tuples containing the x and y
+            coordinates of the points in the path.
+        n {int} -- Number of sub-points used for drawing and calculating the
+            length of the path.
+    """
 
     def __init__(self, points, n=85):
         super().__init__(points, n)
@@ -388,6 +397,16 @@ class CatmullRomPathMemory(CatmullRomPath):
         )
 
     def get_points(self, segment, t):
+        """Calculate coordinates for multiple points in the given segment.
+
+        Arguments:
+            segment {int} -- Index of a segment in the path.
+            t {ndarray} -- Array of floats between 0 and 1.
+
+        Returns:
+            ndarray -- Array of coordinates.
+        """
+
         pg_matrix = self._get_pg(segment)
         n_t = t.size
         t_matrix = np.ones((4, n_t))
@@ -398,6 +417,11 @@ class CatmullRomPathMemory(CatmullRomPath):
         return path.T
 
     def draw(self, screen):
+        """Draw the path.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
         int_points = self._path.astype(int)
         previous_point = int_points[0, :]
         for i in range(1, int_points.shape[0]):
@@ -408,6 +432,12 @@ class CatmullRomPathMemory(CatmullRomPath):
         #     pygame.draw.circle(screen, colors.BLUE, vec2int(point), 5)
 
     def draw_subpath(self, screen, distance):
+        """Draw the path starting from 'distance'.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+            distance {float} -- Starting distance for the subpath.
+        """
         segment_start, t_start = self.find_segment(distance)
         previous_point = self.get_point(segment_start, t_start)
         j = 0
@@ -422,6 +452,15 @@ class CatmullRomPathMemory(CatmullRomPath):
 
 
 class CubicBSplinePath(CatmullRomPathMemory):
+    """Path consisting of Cubic B-splines.
+    Otherwise equivalent to CatmullRomPathMemory.
+
+    Arguments:
+        abc {list[tuple]} -- A list of tuples containing the x and y
+            coordinates of the points in the path.
+        n {int} -- Number of sub-points used for drawing and calculating the
+            length of the path.
+    """
     SPLINE_MATRIX = (1.0 / 6.0) * np.array(
         [
             [1., -3.,  3., -1.],

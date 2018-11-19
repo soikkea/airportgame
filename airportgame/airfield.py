@@ -11,7 +11,7 @@ from airportgame.runway import Runway
 from airportgame.utilities import vec2tuple
 
 
-class Airfield(object):
+class Airfield():
     """
     Airfield that contains runways.
     """
@@ -66,12 +66,8 @@ class Airfield(object):
             else:
                 length = random.randint(1, 3)
 
-            if length == 1:
-                runway_length = Runway.RUNWAY_LENGTH_SHORT
-            elif length == 2:
-                runway_length = Runway.RUNWAY_LENGTH_MED
-            elif length == 3:
-                runway_length = Runway.RUNWAY_LENGTH_LONG
+            # Get the full length of the runway.
+            runway_length = Runway.RUNWAY_LENGTH_ENUM[length]
 
             start_point_found = False
 
@@ -120,9 +116,7 @@ class Airfield(object):
 
             # start point should be to the left of end:
             if e_x < s_x:
-                temp = start
-                start = end
-                end = temp
+                start, end = end, start
 
             runways[i] = (start, end)
 
@@ -131,7 +125,7 @@ class Airfield(object):
             if not self.point_inside_airfield(end):
                 self.logger.warning("Runway %d end outside airfield!", i+1)
 
-            new_runway = Runway(self.add_offset_to_tuple(start), 
+            new_runway = Runway(self.add_offset_to_tuple(start),
                                 self.add_offset_to_tuple(end), i+1, length)
             self.runway_list.append(new_runway)
 
@@ -139,10 +133,16 @@ class Airfield(object):
 
 
     def get_runways(self):
+        """Return a list of the runways on the airfield.
+
+        Returns:
+            list -- A list of runways.
+        """
+
         return self.runway_list
 
-
-    def distance_between(self, a, b):
+    @staticmethod
+    def distance_between(a, b):
         """
         Calculates the distance between two points
         """
@@ -152,7 +152,6 @@ class Airfield(object):
         b_y = b[1]
         distance = math.sqrt((a_x - b_x) ** 2 + (a_y - b_y) ** 2)
         return distance
-
 
     def compare_points(self, point, index):
         """
@@ -177,6 +176,8 @@ class Airfield(object):
 
 
     def update_map(self):
+        """Draws and paints the runways on the airfield map."""
+
         for runway in self.runway_list:
             runway.draw(self.airfield_map, self.get_offset())
 
@@ -184,9 +185,21 @@ class Airfield(object):
             runway.paint(self.airfield_map, self.get_offset())
 
     def get_airfield_map(self):
+        """Return the map of the airfield.
+
+        Returns:
+            Surface -- The map of the airfield.
+        """
+
         return self.airfield_map
 
     def draw(self, screen):
+        """Draws the airfield.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
+
         screen.blit(self.airfield_map, self.offset)
 
     def get_offset(self):

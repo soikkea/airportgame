@@ -6,7 +6,7 @@ from pygame.locals import *
 
 from airportgame.colors import BLACK
 
-class TextInput(object):
+class TextInput():
     """
     Class for interpreting text input from keyboard.
     """
@@ -23,6 +23,13 @@ class TextInput(object):
         self.color = color
 
     def update(self, elapsed_time, events):
+        """Update state and handle events.
+
+        Arguments:
+            elapsed_time {float} -- Time elapsed since last call.
+            events {list} -- List of events to handle.
+        """
+
         self.cursor_tick += elapsed_time
         if self.cursor_tick > 500:
             self.show_cursor = not self.show_cursor
@@ -62,6 +69,12 @@ class TextInput(object):
                 # TODO: finish the rest of keyboard
 
     def draw(self, screen):
+        """Draw the inputted text.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
+
         if not self.active:
             return
         text = self.value
@@ -70,22 +83,50 @@ class TextInput(object):
         self.pgtext.display_text(text, screen, self.x, self.y, self.color)
 
     def activate(self):
+        """Activate the text input."""
+
         self.active = True
         self.return_pressed = False
 
     def deactivate(self):
+        """Deactivates the text input."""
         self.active = False
         self.return_pressed = False
 
     def is_active(self):
+        """Returns True if the text input is active.
+
+        Returns:
+            bool -- Activity status.
+        """
+
         return self.active
 
     def set_pos(self, x, y):
+        """Set the position of the text input.
+
+        Arguments:
+            x {int} -- x coordinate.
+            y {int} -- y coordinate.
+        """
+
         self.x = x
         self.y = y
 
     def was_return_pressed(self):
+        """Returns True if return was pressed.
+
+        Returns:
+            bool -- Was return pressed.
+        """
+
         return self.return_pressed
 
     def get_value(self):
+        """Returns the current value of the text input.
+
+        Returns:
+            str -- Inputted text.
+        """
+
         return self.value

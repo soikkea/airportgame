@@ -17,7 +17,7 @@ from airportgame.flight import Flight
 from airportgame.path import EllipticalPathEnsemble
 
 
-class Game(object):
+class Game():
     """
     The core of the game.
     """
@@ -193,12 +193,18 @@ class Game(object):
         return (x, y)
 
     def create_flight(self, elapsed_time):
+        """Create a new flight.
+
+        Arguments:
+            elapsed_time {float} -- Time elapsed since last call.
+        """
+
         time_limit = 180 * 1000
 
         self.time_since_last_flight_created += elapsed_time
 
         creation_rate = (self.time_since_last_flight_created
-            / time_limit)
+                         / time_limit)
 
         # Limit creation of new planes when there are too many
         if len(self.incoming_flights) > 9:
@@ -244,23 +250,31 @@ class Game(object):
                 closest_runway = runway
         # DEBUG
         if closest_runway is not None:
-            self.logger.debug("Clicked at: %s, runway #%d at: %s", point, closest_runway.get_number(), (closest_runway.get_start_pos()))
+            self.logger.debug("Clicked at: %s, runway #%d at: %s", point,
+                              closest_runway.get_number(),
+                              (closest_runway.get_start_pos()))
         return closest_runway
 
     def create_circling_flight_paths(self, n=3):
+        """Creates ellipticals paths around the airfield.
+
+        Keyword Arguments:
+            n {int} -- Number of paths. (default: {3})
+        """
+
         left_x1 = Game.BORDER_MARGIN
         airfield_offset = self.airfield.get_offset()
         left_x2 = airfield_offset[0] - Game.BORDER_MARGIN
         assert left_x1 < left_x2
         right_x1 = (airfield_offset[0] + self.airfield.FIELD_WIDTH
-                                       + Game.BORDER_MARGIN)
+                    + Game.BORDER_MARGIN)
         right_x2 = Game.WINDOW_WIDTH - Game.BORDER_MARGIN
         assert right_x1 < right_x2
         top_y1 = Game.BORDER_MARGIN
         top_y2 = airfield_offset[1] - Game.BORDER_MARGIN
         assert top_y1 < top_y2
         bottom_y1 = (airfield_offset[1] + self.airfield.FIELD_HEIGHT
-                                        + Game.BORDER_MARGIN)
+                     + Game.BORDER_MARGIN)
         bottom_y2 = Game.WINDOW_HEIGHT - Game.BORDER_MARGIN
         assert bottom_y1 < bottom_y2
 
@@ -281,6 +295,7 @@ class Game(object):
             self.paths.append(EllipticalPathEnsemble(xy1, xy2, circular=True))
 
     def remove_landed_flights(self):
+        """Remove all landed flights from lists."""
         for i in range(len(self.incoming_flights) -1, -1, -1):
             if self.incoming_flights[i].get_status() == Flight.STATUS_LANDED:
                 if id(self.incoming_flights[i]) == id(self.selected_flight):

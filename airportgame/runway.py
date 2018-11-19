@@ -12,7 +12,7 @@ from airportgame.pgtext import draw_text
 from airportgame.utilities import vec2tuple
 
 
-class Runway(object):
+class Runway():
     """
     A part of an airfield
     """
@@ -22,6 +22,11 @@ class Runway(object):
     RUNWAY_LENGTH_SHORT = 70
     RUNWAY_LENGTH_MED = 100
     RUNWAY_LENGTH_LONG = 150
+    RUNWAY_LENGTH_ENUM = {
+        1: RUNWAY_LENGTH_SHORT,
+        2: RUNWAY_LENGTH_MED,
+        3: RUNWAY_LENGTH_LONG
+    }
 
     def __init__(self, start_pos, end_pos, number, length):
         """
@@ -154,15 +159,11 @@ class Runway(object):
         """
 
         assert(self.length in [1, 2, 3])
-        if self.length == 1:
-            return Runway.RUNWAY_LENGTH_SHORT
-        elif self.length == 2:
-            return Runway.RUNWAY_LENGTH_MED
-        elif self.length == 3:
-            return Runway.RUNWAY_LENGTH_LONG
-        else:
+        length = self.RUNWAY_LENGTH_ENUM.get(self.length, None)
+
+        if length is None:
             self.logger.error("Runway length is None. This should never happen!")
-            return None
+        return length
 
 
     def get_angle(self):
@@ -181,20 +182,53 @@ class Runway(object):
 
 
     def get_start_pos(self):
+        """Return the starting point of the runway.
+
+        Returns:
+            Vector2 -- Starting point of the runway.
+        """
+
         return pygame.math.Vector2(self.start_pos)
 
     def get_end_pos(self):
+        """Return the ending point of the runway.
+
+        Returns:
+            Vector2 -- Ending point of the runway.
+        """
         return pygame.math.Vector2(self.end_pos)
 
     def draw_selection_circle(self, screen):
+        """Draw a circle indicating that this runway has been selected.
+
+        Arguments:
+            screen {Surface} -- Surface to draw to.
+        """
+
         pos = self.get_start_pos()
         pos = (int(pos.x), int(pos.y))
         pygame.draw.circle(screen, colors.YELLOW, pos, 20, 3)
 
     def get_direction_vector(self):
-        return pygame.math.Vector2(self.end_pos[0] - self.start_pos[0], self.end_pos[1] - self.start_pos[1]).normalize()
+        """Return an unit vector that points in the same direction as the
+        runway.
+
+        Returns:
+            Vector2 -- Unit vector.
+        """
+
+        return pygame.math.Vector2(self.end_pos[0] -
+                                   self.start_pos[0],
+                                   self.end_pos[1] -
+                                   self.start_pos[1]).normalize()
 
     def get_approach_point(self):
+        """Get an "approach" point that all landing flights must pass through.
+
+        Returns:
+            Vector2 -- Point.
+        """
+
         my_vect = self.get_direction_vector()
         assert(my_vect is not None)
         assert(self.get_full_length() is not None)
