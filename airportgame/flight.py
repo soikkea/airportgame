@@ -95,23 +95,53 @@ class Flight():
             self.direction = -pgmath.Vector2(0, 1).angle_to(vec)
 
     def update_pos(self, vector_pos):
+        """Update the position the flight with a vector.
+
+        Arguments:
+            vector_pos {Vector2} -- New position vector.
+        """
+
         self.x = vector_pos[0]
         self.y = vector_pos[1]
 
     def draw_selection_box(self, screen):
+        """Draws a selection box around the flight.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
+
         pgdraw.rect(screen, colors.BLUE,
                     [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE,
                     Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2],
                     Flight.SELECTION_BOX_WIDTH)
 
     def draw_path(self, screen):
+        """Draw the path of the flight.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
+
         if self.path is not None:
             self.path.draw(screen)
 
     def get_pos(self):
+        """Return the position as a vector.
+
+        Returns:
+            Vector2 -- Current position.
+        """
+
         return pgmath.Vector2(self.x, self.y)
 
     def get_direction_vector(self):
+        """Return the direction of the flight as a unit vector.
+
+        Returns:
+            Vector2 -- Unit vector pointing to the direction of the flight.
+        """
+
         return pgmath.Vector2(0, 1).rotate(-self.direction)
 
     def generate_landing_path(self, runway):

@@ -203,17 +203,55 @@ class Airfield():
         screen.blit(self.airfield_map, self.offset)
 
     def get_offset(self):
+        """Return the offset of the airfield.
+
+        Returns:
+            Vector2 -- Offset
+        """
+
         return pygame.math.Vector2(self.offset)
 
     def add_offset_to_tuple(self, point):
+        """Adds elementwise the given point tuple to the offset.
+
+        Arguments:
+            point {tuple} -- A tuple of two numbers.
+
+        Returns:
+            x -- New x coordinate
+            y -- New y coordinate
+        """
+
         offset_x, offset_y = self.offset
         return (point[0] + offset_x, point[1] + offset_y)
 
     def remove_offset_from_tuple(self, point):
+        """Subtract elementwise the offset from the given point tuple.
+
+        Arguments:
+            point {tuple} -- A tuple of two numbers.
+
+        Returns:
+            x -- New x coordinate
+            y -- New y coordinate
+        """
         offset_x, offset_y = self.offset
         return (point[0] - offset_x, point[1] - offset_y)
 
     def point_inside_airfield(self, point, use_buffer=True):
+        """Returns true if the given point is inside the airfield.
+
+        Arguments:
+            point {tuple} -- Coordinates of a point.
+
+        Keyword Arguments:
+            use_buffer {bool} -- Whether EDGE_BUFFER should be used.
+                (default: {True})
+
+        Returns:
+            bool -- True if point is inside the airfield.
+        """
+
         buffer = self.EDGE_BUFFER if use_buffer else 0
         is_inside = (
             (buffer <= point[0] <= self.FIELD_WIDTH - buffer) and

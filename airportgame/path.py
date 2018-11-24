@@ -471,22 +471,45 @@ class CubicBSplinePath(CatmullRomPathMemory):
     )
 
 
-class PathEnsemble(abc.ABC):
+class PathEnsemble():
+    """A collection of Path objects forming one long path.
+
+    Arguments:
+        circular {bool} -- Defaults to False. Whether the path should loop
+        around.
+    """
+
     def __init__(self, circular=False):
         self.paths = []
         self.length = 0.0
         self.circular = circular
 
     def draw(self, screen):
+        """Draw the path.
+
+        Arguments:
+            screen {Surface} -- Surface to draw on.
+        """
         for path in self.paths:
             path.draw(screen)
 
     def calculate_length(self):
+        """Calculate the length of the ensemble.
+        """
+
         self.length = 0.0
         for path in self.paths:
             self.length += path.length
 
     def get_point_along_path(self, distance):
+        """Get the coordinates of a point on the path ensemble.
+
+        Arguments:
+            distance {float} -- The distance along the path ensemble.
+
+        Returns:
+            Vector2 -- Vector with the coordinates of the requested point.
+        """
         length = 0.0
         if self.circular:
             if distance < 0.0:
@@ -498,8 +521,8 @@ class PathEnsemble(abc.ABC):
         for path in self.paths:
             if length <= distance <= length + path.length:
                 return path.get_point_along_path(distance - length)
-            else:
-                length += path.length
+
+            length += path.length
 
         # distance > self.length
         return path.get_point_along_path(distance - (length - path.length))

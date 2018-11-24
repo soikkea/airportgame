@@ -230,10 +230,22 @@ class Runway():
         """
 
         my_vect = self.get_direction_vector()
-        assert(my_vect is not None)
-        assert(self.get_full_length() is not None)
+        if my_vect is None:
+            self.logger.error("Direction vector is None!")
+        if self.get_full_length() is None:
+            self.logger.error("Runway has None length!")
         return self.get_start_pos() - my_vect * 0.5 * self.get_full_length()
 
-    def get_unoffsetted_point_tuple(self, point, offset):
-        return (point[0] - offset[0], point[1] - offset[1])
+    @staticmethod
+    def get_unoffsetted_point_tuple(point, offset):
+        """Elementwise subtract offset from point.
 
+        Arguments:
+            point {tuple} -- Tuple of two numbers.
+            offset {tuple} -- Tuple of two number.
+
+        Returns:
+            Tuple -- Resulting tuple.
+        """
+
+        return (point[0] - offset[0], point[1] - offset[1])
