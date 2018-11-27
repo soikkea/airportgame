@@ -1,6 +1,7 @@
+"""Description of different planes."""
 # -*- coding: utf-8 -*-
 
-class Plane(object):
+class Plane():
     """
     Base class for different plane types.
     """

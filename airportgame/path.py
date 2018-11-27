@@ -529,6 +529,13 @@ class PathEnsemble():
 
 
 class RectanglePathEnsemble(PathEnsemble):
+    """PathEnsemble made out of rectangular paths.
+
+    Arguments:
+        top_left {tuple} -- Top-left corner of the rectangle
+        bottom_right {tuple} -- Bottom-right corner of the rectangle
+    """
+
     def __init__(self, top_left, bottom_right, **kwargs):
         super().__init__(kwargs)
         self.left_x = top_left[0]
@@ -558,6 +565,13 @@ class RectanglePathEnsemble(PathEnsemble):
 
 
 class EllipticalPathEnsemble(PathEnsemble):
+    """PathEnsemble made out of elliptical paths. The ellipse will be limited
+    by given rectangle.
+
+    Arguments:
+        top_left {tuple} -- Top-left corner of the rectangle
+        bottom_right {tuple} -- Bottom-right corner of the rectangle
+    """
     def __init__(self, top_left, bottom_right, **kwargs):
         super().__init__(kwargs)
         self.left_x = top_left[0]

@@ -30,5 +30,16 @@ class PgText():
 
 
 def draw_text(font, size, text, screen, dest, color):
+    """Draw text on screen.
+
+    Arguments:
+        font {str} -- Name of font.
+        size {int} -- Size of font.
+        text {str} -- Text to draw.
+        screen {Surface} -- Surface to draw on.
+        dest {tuple} -- Position to draw to.
+        color {tuple} -- Color of the text.
+    """
+
     font = pygame.font.SysFont(font, size)
     screen.blit(font.render(text, True, color), dest)

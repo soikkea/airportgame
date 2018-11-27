@@ -1,6 +1,7 @@
+"""Relating to the player."""
 # -*- coding: utf-8 -*-
 
-class Player(object):
+class Player():
     """
     Class representing the player
     """
@@ -11,11 +12,10 @@ class Player(object):
         name:    str
         """
         self.name = name
-        
+
     def get_name(self):
         """
         Returns the name of the player.
         Return:    str
         """
         return self.name
-        

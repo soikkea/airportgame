@@ -113,7 +113,7 @@ class Flight():
 
         pgdraw.rect(screen, colors.BLUE,
                     [self.x - Flight.ICON_SIZE, self.y - Flight.ICON_SIZE,
-                    Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2],
+                     Flight.ICON_SIZE * 2, Flight.ICON_SIZE * 2],
                     Flight.SELECTION_BOX_WIDTH)
 
     def draw_path(self, screen):
@@ -145,6 +145,12 @@ class Flight():
         return pgmath.Vector2(0, 1).rotate(-self.direction)
 
     def generate_landing_path(self, runway):
+        """Generate a landing path to given runway.
+
+        Arguments:
+            runway {Runway} -- Runway to land on.
+        """
+
         points = []
         my_pos = self.get_pos()
         points.append(my_pos)
@@ -160,6 +166,12 @@ class Flight():
         self._status = Flight.STATUS_LANDING
 
     def is_landing(self):
+        """Return true if the flight is landing.
+
+        Returns:
+            bool -- True if the Flight is landing.
+        """
+
         return self._status == Flight.STATUS_LANDING
 
     def set_path(self, path):
@@ -168,4 +180,10 @@ class Flight():
         self.path_pos = 0.0
 
     def get_status(self):
+        """Return the status of the flight.
+
+        Returns:
+            int -- The status of the flight.
+        """
+
         return self._status

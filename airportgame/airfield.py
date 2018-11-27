@@ -260,11 +260,29 @@ class Airfield():
         return is_inside
 
     def get_random_point_inside_airfield(self):
+        """Pick a random point inside the airfield.
+
+        Returns:
+            int -- x-coordinate
+            int -- y-coordinate
+        """
+
         x = random.randint(self.EDGE_BUFFER, self.FIELD_WIDTH - self.EDGE_BUFFER)
         y = random.randint(self.EDGE_BUFFER, self.FIELD_HEIGHT - self.EDGE_BUFFER)
         return x, y
 
     def dist_to_segment(self, start, end, point):
+        """Return the shortest distance between given segment a point.
+
+        Arguments:
+            start {Vector2} -- Start point of segment
+            end {Vector2} -- End point of segment
+            point {Vector2} -- Point
+
+        Returns:
+            float -- Shortest distance between segment and point.
+        """
+
         # https://stackoverflow.com/a/1501725
         segment_length = self.distance_between(start, end)
         if segment_length == 0:
