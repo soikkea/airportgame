@@ -9,7 +9,7 @@ from airportgame.game import Game
 
 
 # TODO: Turn this off when game ready, turn it into command line argument
-SKIP_NAME_INPUT = True
+SKIP_NAME_INPUT = False
 
 
 def main():

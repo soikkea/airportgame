@@ -55,6 +55,9 @@ class Game():
         # Screen surface that has the size of 800 x 600
         self.screen = pygame.display.set_mode((self.WINDOW_WIDTH,
                                                self.WINDOW_HEIGHT))
+
+        self.show_main_menu = True
+
         # Start game loop
         self.game_loop()
 
@@ -82,6 +85,12 @@ class Game():
                             self.airfield.reset_airfield()
                     elif event.key == pygame.K_s:
                         self._draw_subpaths = not self._draw_subpaths
+                    # Main menu key events
+                    if self.show_main_menu:
+                        if event.key == pygame.K_1:
+                            self.show_main_menu = False
+                        elif event.key == pygame.K_2:
+                            running = False
                 if self.player is not None:
                     # Only do this if game is properly initialized
                     if event.type == pygame.MOUSEBUTTONUP:
@@ -113,8 +122,10 @@ class Game():
         """
         Update game logic.
         """
+        if self.show_main_menu:
+            pass
         # A new player must be created:
-        if self.player is None:
+        elif self.player is None:
             if not self.skip_name_input:
                 if not self.textinput.is_active():
                     self.textinput.activate()
@@ -128,9 +139,10 @@ class Game():
                     # TODO: Choose difficulty
             else:
                 self.player = Player("Debug Mode On")
+        elif self.player and self.airfield is None:
             self.airfield = Airfield(offset=self.center_airfield())
             self.create_circling_flight_paths()
-        else:
+        elif self.player and self.airfield:
             # Game is running normally
             self.create_flight(elapsed_time)
             for flight in self.incoming_flights:
@@ -154,10 +166,13 @@ class Game():
 
         screen.fill(GREEN)
         self.pgtext.display_text("AirPortGame", screen)
-        if self.player is None:
+        if self.show_main_menu:
+            self.pgtext.display_text("1. New Game", screen, 100, 100, RED)
+            self.pgtext.display_text("2. Quit", screen, 100, 150, RED)
+        elif self.player is None:
             self.pgtext.display_text("Please enter your name: ", screen, 100, 100, RED)
             self.textinput.draw(screen)
-        else:
+        elif self.player and self.airfield:
             self.airfield.draw(screen)
             for flight in self.incoming_flights:
                 flight.draw(screen, draw_subpath=self._draw_subpaths)
