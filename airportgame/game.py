@@ -15,6 +15,7 @@ from airportgame.player import Player
 from airportgame.airfield import Airfield
 from airportgame.flight import Flight
 from airportgame.path import EllipticalPathEnsemble
+from airportgame.menu import Menu
 
 
 class Game():
@@ -57,6 +58,7 @@ class Game():
                                                self.WINDOW_HEIGHT))
 
         self.show_main_menu = True
+        self.menu = Menu(self.pgtext, self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
 
         # Start game loop
         self.game_loop()
@@ -85,12 +87,6 @@ class Game():
                             self.airfield.reset_airfield()
                     elif event.key == pygame.K_s:
                         self._draw_subpaths = not self._draw_subpaths
-                    # Main menu key events
-                    if self.show_main_menu:
-                        if event.key == pygame.K_1:
-                            self.show_main_menu = False
-                        elif event.key == pygame.K_2:
-                            running = False
                 if self.player is not None:
                     # Only do this if game is properly initialized
                     if event.type == pygame.MOUSEBUTTONUP:
@@ -113,6 +109,8 @@ class Game():
             # Update text input
             if self.textinput.is_active:
                 self.textinput.update(elapsed_time, events)
+            if self.show_main_menu:
+                self.menu.update(elapsed_time, events)
 
             self.update(elapsed_time)
             self.draw(self.screen)
@@ -123,7 +121,7 @@ class Game():
         Update game logic.
         """
         if self.show_main_menu:
-            pass
+            self.show_main_menu = self.menu.show_menu
         # A new player must be created:
         elif self.player is None:
             if not self.skip_name_input:
@@ -167,8 +165,7 @@ class Game():
         screen.fill(GREEN)
         self.pgtext.display_text("AirPortGame", screen)
         if self.show_main_menu:
-            self.pgtext.display_text("1. New Game", screen, 100, 100, RED)
-            self.pgtext.display_text("2. Quit", screen, 100, 150, RED)
+            self.menu.draw(screen)
         elif self.player is None:
             self.pgtext.display_text("Please enter your name: ", screen, 100, 100, RED)
             self.textinput.draw(screen)
