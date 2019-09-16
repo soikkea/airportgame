@@ -29,6 +29,29 @@ class PgText():
         screen.blit(self.create_text(text, color), [x, y])
 
 
+class PgTextObject():
+
+    def __init__(self, text, color, x, y, text_surface):
+        self._text = text
+        self._color = color
+        self._x = x
+        self._y = y
+        self._text_surface = text_surface
+    
+    def draw(self, screen):
+        screen.blit(self._text_surface, [self._x, self._y])
+
+
+class PgTextFactory():
+
+    def __init__(self, pg_text):
+        self.pg_text = pg_text
+    
+    def create_text(self, string, color, x, y):
+        surface = self.pg_text.create_text(string, color)
+        return PgTextObject(string, color, x, y, surface)
+
+
 def draw_text(font, size, text, screen, dest, color):
     """Draw text on screen.
 
