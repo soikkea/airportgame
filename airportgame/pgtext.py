@@ -40,6 +40,9 @@ class PgTextObject():
     
     def draw(self, screen):
         screen.blit(self._text_surface, [self._x, self._y])
+    
+    def get_rect(self):
+        return self._text_surface.get_rect().move(self._x, self._y)
 
 
 class PgTextFactory():

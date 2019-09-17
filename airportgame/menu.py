@@ -1,9 +1,16 @@
 """Main menu implementation."""
 
+from enum import IntEnum
+
 import pygame as pg
 
 from airportgame.colors import RED
 from airportgame.pgtext import PgTextFactory
+
+
+class MenuButtons(IntEnum):
+    NEW_GAME = 0
+    QUIT = 1
 
 
 class Menu():
@@ -24,9 +31,27 @@ class Menu():
         for event in events:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_1:
-                    self.show_menu = False
+                    return self.new_game_pressed()
                 elif event.key == pg.K_2:
-                    pg.event.post(pg.event.Event(pg.QUIT))
+                    return self.quit_pressed()
+            if event.type == pg.MOUSEBUTTONUP:
+                mouse_x, mouse_y = pg.mouse.get_pos()
+                for i, button in enumerate(self.buttons):
+                    button_rect = button.get_rect()
+                    if not button_rect.collidepoint(mouse_x, mouse_y):
+                        continue
+                    if i == MenuButtons.NEW_GAME:
+                        return self.new_game_pressed()
+                    elif i == MenuButtons.QUIT:
+                        return self.quit_pressed()
+
+    def new_game_pressed(self):
+        self.show_menu = False
+        return
+    
+    def quit_pressed(self):
+        pg.event.post(pg.event.Event(pg.QUIT))
+        return
     
     def init_graphics(self):
         new_game = self.pgtext_factory.create_text("1. New Game", RED, 100, 100)
