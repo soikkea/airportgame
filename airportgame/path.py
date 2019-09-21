@@ -470,6 +470,44 @@ class CubicBSplinePath(CatmullRomPathMemory):
         ]
     )
 
+    def __init__(self, points, n=85, loop=False):
+        self.loop = loop
+        if self.loop:
+            assert len(points) > 6
+        super().__init__(points, n=n)
+    
+    def _get_pg(self, segment):
+        """Return the 'pg' matrix for the segment. Here p = the control points
+        for the segment and g = self.SPLINE_MATRIX.
+
+        Arguments:
+            segment {int} -- Index of the segment in the path.
+
+        Returns:
+            ndarray -- pg matrix.
+        """
+
+        if self._n_points == 0:
+            return np.zeros((2, 4))
+        points = []
+        before_first = 0
+        after_last = self._n_points - 1
+        if self.loop:
+            before_first = self._n_points - 1 - 3
+            after_last = 3
+        if segment == 0:
+            points.append(self.points[before_first])
+        else:
+            points.append(self.points[segment - 1])
+        points.append(self.points[segment])
+        for i in range(1, 3):
+            if segment + i >= self._n_points:
+                points.append(self.points[after_last])
+            else:
+                points.append(self.points[segment + i])
+        p_matrix = np.array(points).T
+        return p_matrix.dot(self.SPLINE_MATRIX)
+
 
 class PathEnsemble():
     """A collection of Path objects forming one long path.
@@ -598,7 +636,6 @@ class EllipticalPathEnsemble(PathEnsemble):
         self.left_bottom = pygame.math.Vector2(self.left_x, self.bottom_y)
 
         p1 = [self.top_middle,
-              self.top_middle,
               self.right_top,
               self.right_middle,
               self.right_bottom,
@@ -607,10 +644,11 @@ class EllipticalPathEnsemble(PathEnsemble):
               self.left_middle,
               self.left_top,
               self.top_middle,
-              self.top_middle]
+              self.right_top,
+              self.right_middle]
 
         # path = CatmullRomPathMemory(p1)
-        path = CubicBSplinePath(p1)
+        path = CubicBSplinePath(p1, loop=True)
         self.paths.append(path)
 
         self.calculate_length()
