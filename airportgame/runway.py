@@ -5,8 +5,7 @@
 import logging
 
 import pygame
-# TODO:
-# from flight import Flight
+
 import airportgame.colors as colors
 from airportgame.pgtext import draw_text
 from airportgame.utilities import vec2tuple
@@ -55,7 +54,6 @@ class Runway():
         self.cool_down_time = self.wait_time
 
         self.logger = logging.getLogger(type(self).__name__)
-        # TODO: Finish
 
 
     def get_start_and_end_pos(self):

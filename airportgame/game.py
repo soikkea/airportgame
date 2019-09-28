@@ -91,7 +91,6 @@ class Game():
                     # Only do this if game is properly initialized
                     if event.type == pygame.MOUSEBUTTONUP:
                         # Select flight
-                        # TODO:FINISH
                         mouse_x, mouse_y = pygame.mouse.get_pos()
                         flight_under_mouse = self.find_closest_flight_in_range(mouse_x, mouse_y)
                         runway_under_mouse = self.find_closest_runway_in_range(mouse_x, mouse_y)
@@ -145,7 +144,6 @@ class Game():
             self.create_flight(elapsed_time)
             for flight in self.incoming_flights:
 
-                #TODO: DEBUG, Make this better
                 if flight.path is None:
                     path_num = random.randint(0, len(self.paths) - 1)
                     flight.set_path(self.paths[path_num])
@@ -180,7 +178,6 @@ class Game():
             if ((self.selected_flight is not None) and
                     (self.selected_runway is not None)):
                 self.selected_flight.draw_path(screen)
-            # TODO: DEBUGGING
             for path in self.paths:
                 path.draw(screen)
         self.show_fps(screen)

@@ -66,7 +66,6 @@ class TextInput():
                 elif event.key == K_x: self.value += "x"
                 elif event.key == K_y: self.value += "y"
                 elif event.key == K_z: self.value += "z"
-                # TODO: finish the rest of keyboard
 
     def draw(self, screen):
         """Draw the inputted text.
