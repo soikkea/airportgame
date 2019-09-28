@@ -21,7 +21,7 @@ class Flight():
     WAITING_DISTANCE = 60
     ICON_SIZE = 5
     SELECTION_BOX_WIDTH = 2
-    SPEED = 0.01
+    SPEED = 0.05
 
     # Status codes
     STATUS_NORMAL = 0
