@@ -493,8 +493,8 @@ class CubicBSplinePath(CatmullRomPathMemory):
         before_first = 0
         after_last = self._n_points - 1
         if self.loop:
-            before_first = self._n_points - 1 - 3
-            after_last = 3
+            before_first = self._n_points - 1 - 1
+            after_last = 1
         if segment == 0:
             points.append(self.points[before_first])
         else:
@@ -619,16 +619,14 @@ class EllipticalPathEnsemble(PathEnsemble):
         self.width = self.right_x - self.left_x
         self.height = self.bottom_y - self.top_y
 
-        offset = 36
-
         self.top_middle = pygame.math.Vector2(
-            self.left_x + self.width * 0.5, self.top_y - offset)
+            self.left_x + self.width * 0.5, self.top_y)
         self.right_middle = pygame.math.Vector2(
-            self.right_x + offset, self.top_y + self.height * 0.5)
+            self.right_x, self.top_y + self.height * 0.5)
         self.bottom_middle = pygame.math.Vector2(
-            self.left_x + self.width * 0.5, self.bottom_y + offset)
+            self.left_x + self.width * 0.5, self.bottom_y)
         self.left_middle = pygame.math.Vector2(
-            self.left_x - offset, self.top_y + self.height * 0.5)
+            self.left_x, self.top_y + self.height * 0.5)
 
         self.left_top = pygame.math.Vector2(self.left_x, self.top_y)
         self.right_top = pygame.math.Vector2(self.right_x, self.top_y)
@@ -643,11 +641,8 @@ class EllipticalPathEnsemble(PathEnsemble):
               self.left_bottom,
               self.left_middle,
               self.left_top,
-              self.top_middle,
-              self.right_top,
-              self.right_middle]
+              self.top_middle]
 
-        # path = CatmullRomPathMemory(p1)
         path = CubicBSplinePath(p1, loop=True)
         self.paths.append(path)
 
