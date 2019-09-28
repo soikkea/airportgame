@@ -8,7 +8,7 @@ import math
 import pygame
 
 from airportgame.runway import Runway
-from airportgame.utilities import vec2tuple
+from airportgame.utilities import vec2tuple, distance_between
 
 
 class Airfield():
@@ -42,7 +42,8 @@ class Airfield():
 
         self.create_airfield()
 
-        self.airfield_map = pygame.Surface((self.FIELD_WIDTH, self.FIELD_HEIGHT))
+        self.airfield_map = pygame.Surface(
+            (self.FIELD_WIDTH, self.FIELD_HEIGHT))
         self.airfield_map.fill(self.TRANSPARENCY_COLORKEY)
         self.airfield_map.set_colorkey(self.TRANSPARENCY_COLORKEY)
         self.update_map()
@@ -131,7 +132,6 @@ class Airfield():
 
         return
 
-
     def get_runways(self):
         """Return a list of the runways on the airfield.
 
@@ -140,18 +140,6 @@ class Airfield():
         """
 
         return self.runway_list
-
-    @staticmethod
-    def distance_between(a, b):
-        """
-        Calculates the distance between two points
-        """
-        a_x = a[0]
-        a_y = a[1]
-        b_x = b[0]
-        b_y = b[1]
-        distance = math.sqrt((a_x - b_x) ** 2 + (a_y - b_y) ** 2)
-        return distance
 
     def compare_points(self, point, index):
         """
@@ -167,13 +155,12 @@ class Airfield():
             start = self.remove_offset_from_tuple(start)
             end = self.remove_offset_from_tuple(end)
 
-            if (self.distance_between(point, start) < self.MINIMUM_DISTANCE or
-                    self.distance_between(point, end) < self.MINIMUM_DISTANCE):
+            if (distance_between(point, start) < self.MINIMUM_DISTANCE or
+                    distance_between(point, end) < self.MINIMUM_DISTANCE):
                 return False
             if self.dist_to_segment(start, end, point) < (self.MINIMUM_DISTANCE):
                 return False
         return True
-
 
     def update_map(self):
         """Draws and paints the runways on the airfield map."""
@@ -267,8 +254,10 @@ class Airfield():
             int -- y-coordinate
         """
 
-        x = random.randint(self.EDGE_BUFFER, self.FIELD_WIDTH - self.EDGE_BUFFER)
-        y = random.randint(self.EDGE_BUFFER, self.FIELD_HEIGHT - self.EDGE_BUFFER)
+        x = random.randint(
+            self.EDGE_BUFFER, self.FIELD_WIDTH - self.EDGE_BUFFER)
+        y = random.randint(
+            self.EDGE_BUFFER, self.FIELD_HEIGHT - self.EDGE_BUFFER)
         return x, y
 
     def dist_to_segment(self, start, end, point):
@@ -284,9 +273,9 @@ class Airfield():
         """
 
         # https://stackoverflow.com/a/1501725
-        segment_length = self.distance_between(start, end)
+        segment_length = distance_between(start, end)
         if segment_length == 0:
-            return self.distance_between(start, point)
+            return distance_between(start, point)
         try:
             vec_a = point - start
             vec_b = end - start
@@ -297,4 +286,4 @@ class Airfield():
         projection = vec_a.dot(vec_b) / (segment_length ** 2)
         t = max(0, min(1, projection))
         projection_point = start + t * vec_b
-        return self.distance_between(point, vec2tuple(projection_point))
+        return distance_between(point, vec2tuple(projection_point))
